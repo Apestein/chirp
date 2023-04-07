@@ -1,6 +1,8 @@
 import { z } from "zod"
+import { clerkClient } from "@clerk/nextjs/server"
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc"
+import postcss from "postcss"
 
 export const mainRouter = createTRPCRouter({
   hello: publicProcedure
@@ -10,7 +12,25 @@ export const mainRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       }
     }),
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.post.findMany()
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const posts = await ctx.prisma.post.findMany({
+      take: 100,
+    })
+    const users = (
+      await clerkClient.users.getUserList({
+        userId: posts.map((post) => post.authorId),
+        limit: 100,
+      })
+    ).map((user) => ({
+      id: user.id,
+      username: user.username,
+      image: user.profileImageUrl,
+    }))
+    const postsWithUser = posts.map((post) => ({
+      post,
+      author: users.find((user) => user.id === post.authorId)!,
+    }))
+    // console.log(postsWithUser)
+    return postsWithUser
   }),
 })
