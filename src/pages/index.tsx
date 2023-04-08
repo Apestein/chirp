@@ -5,15 +5,14 @@ import Image from "next/image"
 import { SignInButton, SignOutButton } from "@clerk/nextjs"
 import { useUser } from "@clerk/nextjs"
 
-import { RouterOutputs, api } from "~/utils/api"
+import { api } from "~/utils/api"
+import type { RouterOutputs } from "~/utils/api"
 
 const Home: NextPage = () => {
   const hello = api.main.hello.useQuery({ text: "from tRPC" })
   const { data: posts, isLoading } = api.main.getAll.useQuery()
-  const { isLoaded, isSignedIn, user } = useUser()
+  const { isSignedIn, user } = useUser()
 
-  if (isLoading) return <div>Loading...</div>
-  if (!posts) return <div>Something went wrong</div>
   return (
     <>
       <Head>
@@ -23,15 +22,19 @@ const Home: NextPage = () => {
       </Head>
       <header className="border-b border-b-[#ffffff50]">
         <i className="relative flex p-1">
-          <img
+          <Image
             src={user?.profileImageUrl ?? "/user.svg"}
             alt="user-image"
-            className="absolute w-8 rounded-full"
+            width={64}
+            height={64}
+            className="absolute w-16 rounded-full"
           />
-          <img
+          <Image
             src="/doge-logo.png"
             alt="doge-logo"
-            className="m-auto w-8 rounded-full"
+            width={64}
+            height={64}
+            className="m-auto w-16 rounded-full"
           />
         </i>
         <section className="grid grid-cols-2 justify-items-center p-3 pb-0">
@@ -58,27 +61,16 @@ const Home: NextPage = () => {
       </header>
       <main className="flex flex-col items-center justify-start bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col gap-4 pt-3">
-          <h1 className="mx-auto text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Chirp
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            {/* <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link> */}
-          </div>
-          <ul>
-            {posts?.map((el) => (
-              <Post {...el} key={el.post.id} />
-            ))}
-          </ul>
+          <PostWizard />
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <ul>
+              {posts?.map((el) => (
+                <Post {...el} key={el.post.id} />
+              ))}
+            </ul>
+          )}
           <p className="mx-auto flex flex-col text-2xl text-white">
             {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             {isSignedIn && <SignOutButton />}
@@ -132,14 +124,42 @@ const Home: NextPage = () => {
   )
 }
 
+function PostWizard() {
+  const { user } = useUser()
+
+  function handleSubmit(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Enter") return
+    console.log("submit placeholder")
+  }
+
+  return (
+    <section className="flex items-center border-b border-b-[#ffffff50]">
+      <Image
+        src={user?.profileImageUrl ?? "/user.svg"}
+        alt="profile-image"
+        width={64}
+        height={64}
+        className="rounded-full"
+      />
+      <input
+        type="text"
+        className="h-12 w-full text-xl text-black outline-none"
+        onKeyDown={(e) => handleSubmit(e)}
+      />
+    </section>
+  )
+}
+
 type PostWithUser = RouterOutputs["main"]["getAll"][number]
 function Post(props: PostWithUser) {
   const { post, author } = props
   return (
     <li className="flex">
-      <img
+      <Image
         src={author?.image}
         alt="profile-image"
+        width={64}
+        height={64}
         className="w-16 rounded-full"
       />
       <p>{post.content}</p>

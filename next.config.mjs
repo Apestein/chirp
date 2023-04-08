@@ -2,11 +2,14 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds.
  */
-!process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"));
+!process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"))
 
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  images: {
+    domains: ["images.clerk.dev"],
+  },
 
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
@@ -18,5 +21,5 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
-};
-export default config;
+}
+export default config

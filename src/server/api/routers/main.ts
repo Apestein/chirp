@@ -1,8 +1,6 @@
 import { z } from "zod"
 import { clerkClient } from "@clerk/nextjs/server"
-
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc"
-import postcss from "postcss"
 
 export const mainRouter = createTRPCRouter({
   hello: publicProcedure
@@ -28,9 +26,9 @@ export const mainRouter = createTRPCRouter({
     }))
     const postsWithUser = posts.map((post) => ({
       post,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       author: users.find((user) => user.id === post.authorId)!,
     }))
-    // console.log(postsWithUser)
     return postsWithUser
   }),
 })
