@@ -8,6 +8,10 @@ import { useUser } from "@clerk/nextjs"
 import { api } from "~/utils/api"
 import type { RouterOutputs } from "~/utils/api"
 
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
+dayjs.extend(relativeTime)
+
 const Home: NextPage = () => {
   const hello = api.main.hello.useQuery({ text: "from tRPC" })
   const { data: posts, isLoading } = api.main.getAll.useQuery()
@@ -59,7 +63,7 @@ const Home: NextPage = () => {
           </label>
         </section>
       </header>
-      <main className="flex flex-col items-center justify-start bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+      <main className="flex flex-col items-center justify-start">
         <div className="container flex flex-col gap-4 pt-3">
           <PostWizard />
           {isLoading ? (
@@ -126,10 +130,11 @@ const Home: NextPage = () => {
 
 function PostWizard() {
   const { user } = useUser()
+  // const { mutate, isLoading } = api.main.create.useMutation()
 
   function handleSubmit(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== "Enter") return
-    console.log("submit placeholder")
+    // mutate({ content: e.currentTarget.value })
   }
 
   return (
@@ -154,7 +159,7 @@ type PostWithUser = RouterOutputs["main"]["getAll"][number]
 function Post(props: PostWithUser) {
   const { post, author } = props
   return (
-    <li className="flex">
+    <li className="flex items-center gap-3">
       <Image
         src={author?.image}
         alt="profile-image"
@@ -162,7 +167,12 @@ function Post(props: PostWithUser) {
         height={64}
         className="w-16 rounded-full"
       />
-      <p>{post.content}</p>
+      <div>
+        <p>
+          {author.username} · {dayjs(post.createdAt).fromNow()}
+        </p>
+        <p className="text-xl">{post.content}</p>
+      </div>
     </li>
   )
 }
