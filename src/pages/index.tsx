@@ -130,15 +130,24 @@ const Home: NextPage = () => {
 
 function PostWizard() {
   const { user } = useUser()
-  // const { mutate, isLoading } = api.main.create.useMutation()
+  const ctx = api.useContext()
+  const { mutate, isLoading } = api.main.create.useMutation({
+    onSuccess: () => {
+      const postInput = document.querySelector(
+        "#post-input"
+      ) as HTMLInputElement
+      postInput.value = ""
+      void ctx.main.getAll.invalidate()
+    },
+  })
 
   function handleSubmit(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== "Enter") return
-    // mutate({ content: e.currentTarget.value })
+    mutate({ content: e.currentTarget.value })
   }
 
   return (
-    <section className="flex items-center border-b border-b-[#ffffff50]">
+    <section className="flex items-center border-b border-b-[#ffffff50] disabled:bg-red-500">
       <Image
         src={user?.profileImageUrl ?? "/user.svg"}
         alt="profile-image"
@@ -148,7 +157,9 @@ function PostWizard() {
       />
       <input
         type="text"
+        id="post-input"
         className="h-12 w-full text-xl text-black outline-none"
+        disabled={isLoading}
         onKeyDown={(e) => handleSubmit(e)}
       />
     </section>
