@@ -10,6 +10,7 @@ import type { RouterOutputs } from "~/utils/api"
 
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { toast } from "react-hot-toast"
 dayjs.extend(relativeTime)
 
 const Home: NextPage = () => {
@@ -139,11 +140,21 @@ function PostWizard() {
       postInput.value = ""
       void ctx.main.getAll.invalidate()
     },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content?.[0]
+      if (errorMessage) toast.error(errorMessage)
+      else toast.error("Fail due to unknown error")
+    },
   })
 
-  function handleSubmit(e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleSubmitOnEnter(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key !== "Enter") return
     mutate({ content: e.currentTarget.value })
+  }
+
+  function handleSubmit() {
+    const postInput = document.querySelector("#post-input") as HTMLInputElement
+    mutate({ content: postInput.value })
   }
 
   return (
@@ -160,8 +171,39 @@ function PostWizard() {
         id="post-input"
         className="h-12 w-full text-xl text-black outline-none"
         disabled={isLoading}
-        onKeyDown={(e) => handleSubmit(e)}
+        onKeyDown={handleSubmitOnEnter}
       />
+      <button
+        onClick={handleSubmit}
+        disabled={isLoading}
+        className="flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-emerald-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-emerald-600 focus:bg-emerald-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none"
+      >
+        Tweet
+        {isLoading && (
+          <svg
+            className="h-8 w-8 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            role="graphics-symbol"
+            aria-labelledby="title-05 desc-05"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        )}
+      </button>
     </section>
   )
 }
