@@ -1,19 +1,16 @@
 import { type NextPage } from "next"
-import Link from "next/link"
 import Image from "next/image"
 import { SignInButton, SignOutButton } from "@clerk/nextjs"
 import { useUser } from "@clerk/nextjs"
-
+import { toast } from "react-hot-toast"
+import Post from "~/components/Post"
 import { api } from "~/utils/api"
-import type { RouterOutputs } from "~/utils/api"
-
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { toast } from "react-hot-toast"
+
 dayjs.extend(relativeTime)
 
 const Home: NextPage = () => {
-  const hello = api.main.hello.useQuery({ text: "from tRPC" })
   const { data: posts, isLoading } = api.main.getAll.useQuery()
   const { isSignedIn, user } = useUser()
 
@@ -71,7 +68,6 @@ const Home: NextPage = () => {
             </ul>
           )}
           <p className="mx-auto flex flex-col text-2xl text-white">
-            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
             {isSignedIn && <SignOutButton />}
             {!isSignedIn && <SignInButton />}
           </p>
@@ -201,27 +197,4 @@ function PostWizard() {
     </section>
   )
 }
-
-type PostWithUser = RouterOutputs["main"]["getAll"][number]
-function Post(props: PostWithUser) {
-  const { post, author } = props
-  return (
-    <li className="flex items-center gap-3">
-      <Image
-        src={author?.image}
-        alt="profile-image"
-        width={64}
-        height={64}
-        className="w-16 rounded-full"
-      />
-      <Link href={`post/${post.id}`}>
-        <Link href={`@${author.username}?authorId=${post.authorId}`}>
-          {author.username} · {dayjs(post.createdAt).fromNow()}
-        </Link>
-        <p className="text-xl">{post.content}</p>
-      </Link>
-    </li>
-  )
-}
-
 export default Home

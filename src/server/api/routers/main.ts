@@ -17,13 +17,6 @@ const ratelimit = new Ratelimit({
 })
 
 export const mainRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      }
-    }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
@@ -36,13 +29,11 @@ export const mainRouter = createTRPCRouter({
       })
     ).map((user) => ({
       id: user.id,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       username: user.username!,
       image: user.profileImageUrl,
     }))
     const postsWithUser = posts.map((post) => ({
       post,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       author: users.find((user) => user.id === post.authorId)!,
     }))
     return postsWithUser
@@ -55,6 +46,11 @@ export const mainRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const user = await clerkClient.users.getUser(input.authorId)
+      const userFiltered = {
+        id: user.id,
+        username: user.username!,
+        image: user.profileImageUrl,
+      }
       const posts = await ctx.prisma.post.findMany({
         where: {
           authorId: input.authorId,
@@ -62,7 +58,7 @@ export const mainRouter = createTRPCRouter({
         take: 100,
         orderBy: [{ createdAt: "desc" }],
       })
-      return { posts, author: user }
+      return { posts, author: userFiltered }
     }),
   create: privateProcedure
     .input(

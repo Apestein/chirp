@@ -3,6 +3,7 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import Image from "next/image"
 import { api } from "~/utils/api"
+import Post from "~/components/Post"
 
 const ProfilePage: NextPage = () => {
   const router = useRouter()
@@ -22,11 +23,11 @@ const ProfilePage: NextPage = () => {
       <main className="flex flex-col items-start justify-start">
         <figure className="flex h-48 w-full items-end bg-blue-300">
           <Image
-            src={postsByUser?.author.profileImageUrl ?? "/user.svg"}
+            src={postsByUser?.author.image ?? "/user.svg"}
             alt="profile-image"
-            width={64}
-            height={64}
-            className="relative left-4 top-8 rounded-full"
+            width={96}
+            height={96}
+            className="relative left-4 top-12 rounded-full border-4 border-black"
           />
         </figure>
         <h1 className="mt-12 w-full border-b border-b-[#ffffff50] pb-3 pl-3 text-xl font-bold">
@@ -35,9 +36,9 @@ const ProfilePage: NextPage = () => {
         {isLoading ? (
           <div>Loading...</div>
         ) : (
-          <ul>
-            {postsByUser?.posts.map((el) => (
-              <li key={el.id}>{el.content}</li>
+          <ul className="w-full">
+            {postsByUser?.posts.map((post) => (
+              <Post key={post.id} post={post} author={postsByUser.author} />
             ))}
           </ul>
         )}
