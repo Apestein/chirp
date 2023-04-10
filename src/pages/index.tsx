@@ -220,12 +220,12 @@ function Post(props: PostWithUser) {
         height={64}
         className="w-16 rounded-full"
       />
-      <div>
-        <p>
+      <Link href={`post/${post.id}`}>
+        <Link href={`@${author.username}`}>
           {author.username} · {dayjs(post.createdAt).fromNow()}
-        </p>
+        </Link>
         <p className="text-xl">{post.content}</p>
-      </div>
+      </Link>
     </li>
   )
 }

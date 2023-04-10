@@ -36,7 +36,8 @@ export const mainRouter = createTRPCRouter({
       })
     ).map((user) => ({
       id: user.id,
-      username: user.username,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      username: user.username!,
       image: user.profileImageUrl,
     }))
     const postsWithUser = posts.map((post) => ({
