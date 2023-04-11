@@ -12,19 +12,16 @@ dayjs.extend(relativeTime)
 
 const Home: NextPage = () => {
   const { data: posts, isLoading } = api.main.getAll.useQuery()
-  const { isSignedIn, user } = useUser()
+  const { isSignedIn } = useUser()
 
   return (
     <>
       <header className="border-b border-b-[#ffffff50]">
         <i className="relative flex p-1">
-          <Image
-            src={user?.profileImageUrl ?? "/user.svg"}
-            alt="user-image"
-            width={64}
-            height={64}
-            className="absolute w-16 rounded-full"
-          />
+          <div className="p-3 text-xl" role="signIn-signOut">
+            {isSignedIn && <SignOutButton>Sign-Out</SignOutButton>}
+            {!isSignedIn && <SignInButton>Sign-In</SignInButton>}
+          </div>
           <Image
             src="/doge-logo.png"
             alt="doge-logo"
@@ -33,7 +30,7 @@ const Home: NextPage = () => {
             className="m-auto w-16 rounded-full"
           />
         </i>
-        <section className="grid grid-cols-2 justify-items-center p-3 pb-0">
+        <section className="grid grid-cols-2 justify-items-center">
           <label>
             <input
               type="radio"
@@ -67,10 +64,6 @@ const Home: NextPage = () => {
               ))}
             </ul>
           )}
-          <p className="mx-auto flex flex-col text-2xl text-white">
-            {isSignedIn && <SignOutButton />}
-            {!isSignedIn && <SignInButton />}
-          </p>
         </div>
       </main>
       <footer className="flex justify-around border-t border-t-[#ffffff50] p-3">
@@ -133,7 +126,7 @@ function PostWizard() {
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content?.[0]
       if (errorMessage) toast.error(errorMessage)
-      else toast.error("Fail due to unknown error")
+      else toast.error("Must be logged in to post")
     },
   })
 

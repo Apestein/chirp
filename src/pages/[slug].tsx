@@ -11,7 +11,7 @@ const ProfilePage: NextPage = () => {
   if (typeof authorId !== "string") return <div>An error has occurred</div>
   if (typeof slug !== "string") return <div>An error has occurred</div>
   const { data: postsByUser, isLoading } = api.main.getAllByUser.useQuery({
-    authorId: authorId,
+    authorId,
   })
   return (
     <>

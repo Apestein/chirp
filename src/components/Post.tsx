@@ -18,7 +18,7 @@ export default function Post(props: PostWithUser) {
         height={64}
         className="w-16 rounded-full"
       />
-      <Link href={`post/${post.id}`}>
+      <Link href={`post/${post.id}?authorId=${post.authorId}`}>
         <Link href={`@${author.username}?authorId=${post.authorId}`}>
           {author.username} · {dayjs(post.createdAt).fromNow()}
         </Link>

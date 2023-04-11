@@ -38,7 +38,7 @@ export const mainRouter = createTRPCRouter({
     }))
     return postsWithUser
   }),
-  getAllByUser: privateProcedure
+  getAllByUser: publicProcedure
     .input(
       z.object({
         authorId: z.string(),
@@ -59,6 +59,28 @@ export const mainRouter = createTRPCRouter({
         orderBy: [{ createdAt: "desc" }],
       })
       return { posts, author: userFiltered }
+    }),
+  getPostById: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+        authorId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await clerkClient.users.getUser(input.authorId)
+      const userFiltered = {
+        id: user.id,
+        username: user.username!,
+        image: user.profileImageUrl,
+      }
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: input.postId,
+        },
+      })
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" })
+      return { post, author: userFiltered }
     }),
   create: privateProcedure
     .input(
