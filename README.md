@@ -2,7 +2,7 @@
 
 _Technologies Used:_
 
-- Create T3 App
+- Create T3 App (NextJS, Typescript, tRPC, Prisma, Tailwind)
 - Clerk Auth
 - Planetscale (MySQL)
 - Upstash (Ratelimiter)
@@ -10,3 +10,4 @@ _Technologies Used:_
 - Vercel
 - Zod
 - TanStack Query
+- React Hot Toast
