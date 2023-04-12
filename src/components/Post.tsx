@@ -22,7 +22,7 @@ export default function Post(props: PostWithUser) {
         <Link href={`@${author.username}?authorId=${post.authorId}`}>
           {author.username} · {dayjs(post.createdAt).fromNow()}
         </Link>
-        <p className="text-xl">{post.content}</p>
+        <p className="break-all text-xl">{post.content}</p>
       </Link>
     </li>
   )

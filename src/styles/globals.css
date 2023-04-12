@@ -3,14 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  #__next {
     background-color: black;
     color: white;
-  }
-  #__next {
     display: grid;
+    max-height: 100vh;
     min-height: 100vh;
     grid-template-rows: min-content 1fr min-content;
+  }
+
+  ::-webkit-scrollbar {
+    border-radius: 6px;
+    background-color: #00000050;
+    width: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background-color: rgb(212, 212, 212);
   }
 }
 

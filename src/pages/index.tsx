@@ -18,9 +18,21 @@ const Home: NextPage = () => {
     <>
       <header className="border-b border-b-[#ffffff50]">
         <i className="relative flex p-1">
-          <div className="p-3 text-xl" role="signIn-signOut">
-            {isSignedIn && <SignOutButton>Sign-Out</SignOutButton>}
-            {!isSignedIn && <SignInButton>Sign-In</SignInButton>}
+          <div className="absolute p-3 text-xl" role="signIn-signOut">
+            {isSignedIn && (
+              <SignOutButton>
+                <button className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded bg-rose-500 px-5 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-rose-600 focus:bg-rose-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-rose-300 disabled:bg-rose-300 disabled:shadow-none">
+                  Sign-Out
+                </button>
+              </SignOutButton>
+            )}
+            {!isSignedIn && (
+              <SignInButton>
+                <button className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded bg-teal-500 px-5 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-teal-600 focus:bg-teal-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-teal-300 disabled:bg-teal-300 disabled:shadow-none">
+                  Sign-In
+                </button>
+              </SignInButton>
+            )}
           </div>
           <Image
             src="/doge-logo.png"
@@ -52,8 +64,8 @@ const Home: NextPage = () => {
           </label>
         </section>
       </header>
-      <main className="flex flex-col items-center justify-start">
-        <div className="container flex flex-col gap-4 pt-3">
+      <main className="flex max-h-full flex-col items-center justify-start overflow-auto">
+        <div className="container pt-3">
           <PostWizard />
           {isLoading ? (
             <div>Loading...</div>
@@ -125,8 +137,10 @@ function PostWizard() {
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content?.[0]
+      const otherErrorMessage = e.message
       if (errorMessage) toast.error(errorMessage)
-      else toast.error("Must be logged in to post")
+      else if (otherErrorMessage) toast.error(otherErrorMessage)
+      else toast.error("unknown error")
     },
   })
 
@@ -152,14 +166,15 @@ function PostWizard() {
       <input
         type="text"
         id="post-input"
-        className="h-12 w-full text-xl text-black outline-none"
+        className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
         disabled={isLoading}
         onKeyDown={handleSubmitOnEnter}
+        placeholder="Please sign-in to tweet"
       />
       <button
+        className="inline-flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-sky-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-sky-600 focus:bg-sky-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-sky-300 disabled:bg-sky-300 disabled:shadow-none"
         onClick={handleSubmit}
         disabled={isLoading}
-        className="flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-emerald-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-emerald-600 focus:bg-emerald-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none"
       >
         Tweet
         {isLoading && (
