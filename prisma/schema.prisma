@@ -20,3 +20,11 @@ model Post {
 
     @@index([authorId])
 }
+
+model User {
+  id String @id
+  createdAt DateTime @default(now())
+
+  username String @db.VarChar(255)
+  profileImageUrl String @db.Text
+}
