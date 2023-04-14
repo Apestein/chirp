@@ -1,13 +1,12 @@
-# Chirp (work in progress) - A twitter syle messaging app. 100% typesafe & 100% serverless. Production ready, infinite scaling. 
+# Chirp (work in progress) - A twitter social media app. 100% typesafe & 100% serverless. Production ready, infinite scaling.
 
 _Technologies Used:_
 
 - Create T3 App (NextJS, Typescript, tRPC, Prisma, Tailwind)
-- Clerk Auth
+- Clerk Authentication
 - Planetscale (MySQL)
 - Upstash (Ratelimiter)
-- Axiom Logging
-- Vercel
+- Axiom (Logging)
 - Zod
 - TanStack Query
 - React Hot Toast
