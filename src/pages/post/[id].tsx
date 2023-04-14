@@ -6,12 +6,10 @@ import Post from "~/components/Post"
 
 const SinglePostPage: NextPage = () => {
   const router = useRouter()
-  const { id, authorId } = router.query
-  if (typeof id !== "string") return <div></div>
-  if (typeof authorId !== "string") return <div></div>
+  const { id } = router.query
+  if (typeof id !== "string") return <div>An error has occurred</div>
   const { data, isLoading } = api.main.getPostById.useQuery({
     postId: id,
-    authorId,
   })
   if (isLoading) return <div>Loading...</div>
   if (!data) return <div>Error! No data</div>
@@ -23,7 +21,7 @@ const SinglePostPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Post post={data?.post} author={data?.author} />
+        <Post {...data} />
       </main>
     </>
   )

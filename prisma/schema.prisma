@@ -14,8 +14,8 @@ datasource db {
 model Post {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
-
     content String @db.VarChar(255)
+    user User @relation(fields: [authorId], references: [id])
     authorId String
 
     @@index([authorId])
@@ -24,7 +24,7 @@ model Post {
 model User {
   id String @id
   createdAt DateTime @default(now())
-
   username String @db.VarChar(255)
   profileImageUrl String @db.Text
+  posts Post[]
 }

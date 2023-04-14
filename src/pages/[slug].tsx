@@ -23,7 +23,7 @@ const ProfilePage: NextPage = () => {
       <header className="flex flex-col items-start justify-start">
         <figure className="flex h-48 w-full items-end bg-blue-300">
           <Image
-            src={postsByUser?.author.image ?? "/user.svg"}
+            src={postsByUser?.profileImageUrl ?? "/user.svg"}
             alt="profile-image"
             width={96}
             height={96}
@@ -31,7 +31,7 @@ const ProfilePage: NextPage = () => {
           />
         </figure>
         <h1 className="mt-12 w-full border-b border-b-[#ffffff50] pb-3 pl-3 text-xl font-bold">
-          @{postsByUser?.author.username}
+          @{postsByUser?.username}
         </h1>
       </header>
       <main className="flex flex-col items-start justify-start overflow-auto">
@@ -40,7 +40,16 @@ const ProfilePage: NextPage = () => {
         ) : (
           <ul className="w-full">
             {postsByUser?.posts.map((post) => (
-              <Post key={post.id} post={post} author={postsByUser.author} />
+              <Post
+                key={post.id}
+                {...post}
+                user={{
+                  id: postsByUser.id,
+                  createdAt: postsByUser.createdAt,
+                  username: postsByUser.username,
+                  profileImageUrl: postsByUser.profileImageUrl,
+                }}
+              />
             ))}
           </ul>
         )}

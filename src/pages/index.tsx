@@ -71,8 +71,8 @@ const Home: NextPage = () => {
             <div>Loading...</div>
           ) : (
             <ul>
-              {posts?.map((el) => (
-                <Post {...el} key={el.post.id} />
+              {posts?.map((post) => (
+                <Post {...post} key={post.id} />
               ))}
             </ul>
           )}

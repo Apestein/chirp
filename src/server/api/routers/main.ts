@@ -21,22 +21,11 @@ export const mainRouter = createTRPCRouter({
     const posts = await ctx.prisma.post.findMany({
       orderBy: [{ createdAt: "desc" }],
       take: 100,
+      include: {
+        user: true,
+      },
     })
-    const users = (
-      await clerkClient.users.getUserList({
-        userId: posts.map((post) => post.authorId),
-        limit: 100,
-      })
-    ).map((user) => ({
-      id: user.id,
-      username: user.username!,
-      image: user.profileImageUrl,
-    }))
-    const postsWithUser = posts.map((post) => ({
-      post,
-      author: users.find((user) => user.id === post.authorId)!,
-    }))
-    return postsWithUser
+    return posts
   }),
   getAllByUser: publicProcedure
     .input(
@@ -45,42 +34,33 @@ export const mainRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = await clerkClient.users.getUser(input.authorId)
-      const userFiltered = {
-        id: user.id,
-        username: user.username!,
-        image: user.profileImageUrl,
-      }
-      const posts = await ctx.prisma.post.findMany({
+      const user = await ctx.prisma.user.findUnique({
         where: {
-          authorId: input.authorId,
+          id: input.authorId,
         },
-        take: 100,
-        orderBy: [{ createdAt: "desc" }],
+        include: {
+          posts: true,
+        },
       })
-      return { posts, author: userFiltered }
+      return user
     }),
   getPostById: publicProcedure
     .input(
       z.object({
         postId: z.string(),
-        authorId: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = await clerkClient.users.getUser(input.authorId)
-      const userFiltered = {
-        id: user.id,
-        username: user.username!,
-        image: user.profileImageUrl,
-      }
       const post = await ctx.prisma.post.findUnique({
         where: {
           id: input.postId,
         },
+        include: {
+          user: true,
+        },
       })
       if (!post) throw new TRPCError({ code: "NOT_FOUND" })
-      return { post, author: userFiltered }
+      return post
     }),
   create: privateProcedure
     .input(
@@ -94,7 +74,6 @@ export const mainRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId
-
       const { success } = await ratelimit.limit(authorId)
       if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
       const post = await ctx.prisma.post.create({
