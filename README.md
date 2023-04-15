@@ -1,4 +1,4 @@
-# Chirp (work in progress) - A twitter social media app. 100% typesafe & 100% serverless. Production ready, infinite scaling.
+# Chirp (work in progress) - A twitter style social media app. 100% typesafe & 100% serverless. Production ready, infinite scaling.
 
 _Technologies Used:_
 
