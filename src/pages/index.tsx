@@ -6,17 +6,33 @@ import Post from "~/components/Post"
 import Footer from "~/components/Footer"
 import Header from "~/components/Header"
 import { api } from "~/utils/api"
+import type { InferGetStaticPropsType } from "next"
+import { client } from "~/utils/contentful-client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
 dayjs.extend(relativeTime)
 
-const Home: NextPage = () => {
+export const getStaticProps = async () => {
+  const res = await client.getEntries({
+    content_type: "trending",
+  })
+  const data = res.items.map((item) => item.fields.topic) as string[]
+  return {
+    props: {
+      trends: data,
+    },
+  }
+}
+
+export default function Home({
+  trends,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   const { data: posts, isLoading } = api.main.getAll.useQuery()
   return (
     <>
       <Header />
-      <main className="flex max-h-full flex-col items-center justify-start overflow-auto">
+      <main className="flex max-h-full justify-center overflow-auto">
         <div className="container relative h-full border-x border-x-[#ffffff50] pt-3">
           <PostWizard />
           {isLoading ? (
@@ -52,6 +68,14 @@ const Home: NextPage = () => {
             </ul>
           )}
         </div>
+        <ul className="m-3 hidden sm:block">
+          <h2 className="mb-3 text-xl">Trending</h2>
+          {trends.map((trend, index) => (
+            <li key={crypto.randomUUID()}>
+              {++index}.&nbsp;{trend}
+            </li>
+          ))}
+        </ul>
       </main>
       <Footer />
     </>
@@ -139,4 +163,3 @@ function PostWizard() {
     </section>
   )
 }
-export default Home
