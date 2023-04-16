@@ -28,7 +28,7 @@ export default function Header() {
           alt="doge-logo"
           width={64}
           height={64}
-          className="m-auto w-16 rounded-full"
+          className="m-auto rounded-full"
         />
       </i>
       <section className="grid grid-cols-2 justify-items-center">

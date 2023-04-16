@@ -18,12 +18,14 @@ export default function Post(props: PostWithUser) {
         height={64}
         className="w-16 rounded-full"
       />
-      <Link href={`post/${id}`}>
+      <div>
         <Link href={`@${user.username}?authorId=${authorId}`}>
           {user.username} · {dayjs(createdAt).fromNow()}
         </Link>
-        <p className="break-all text-xl">{content}</p>
-      </Link>
+        <Link href={`post/${id}`}>
+          <p className="break-all text-xl">{content}</p>
+        </Link>
+      </div>
     </li>
   )
 }
