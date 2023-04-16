@@ -1,4 +1,3 @@
-import { type NextPage } from "next"
 import Image from "next/image"
 import { useUser } from "@clerk/nextjs"
 import { toast } from "react-hot-toast"
@@ -8,6 +7,7 @@ import Header from "~/components/Header"
 import { api } from "~/utils/api"
 import type { InferGetStaticPropsType } from "next"
 import { client } from "~/utils/contentful-client"
+import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
@@ -71,7 +71,7 @@ export default function Home({
         <ul className="m-3 hidden sm:block">
           <h2 className="mb-3 text-xl">Trending</h2>
           {trends.map((trend, index) => (
-            <li key={crypto.randomUUID()}>
+            <li key={crypto.randomBytes(20).toString("hex")}>
               {++index}.&nbsp;{trend}
             </li>
           ))}
