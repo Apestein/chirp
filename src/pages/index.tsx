@@ -33,7 +33,7 @@ export default function Home({
     <>
       <Header />
       <main className="flex max-h-full justify-center overflow-auto">
-        <div className="relative h-fit border-x border-x-[#ffffff50] pt-3">
+        <div className="container relative">
           <PostWizard />
           {isLoading ? (
             <svg
@@ -61,7 +61,7 @@ export default function Home({
               />
             </svg>
           ) : (
-            <ul>
+            <ul className="border-x border-x-[#ffffff50]">
               {posts?.map((post) => (
                 <Post {...post} key={post.id} />
               ))}
@@ -83,7 +83,7 @@ export default function Home({
 }
 
 function PostWizard() {
-  const { user } = useUser()
+  const { user, isSignedIn } = useUser()
   const ctx = api.useContext()
   const { mutate, isLoading } = api.main.create.useMutation({
     onSuccess: () => {
@@ -113,7 +113,7 @@ function PostWizard() {
   }
 
   return (
-    <section className="flex items-center border-b border-b-[#ffffff50] px-3 disabled:bg-red-500">
+    <section className="flex items-center border-x border-b border-[#ffffff50] border-b-[#ffffff50] p-3 px-3">
       <Image
         src={user?.profileImageUrl ?? "/user.svg"}
         alt="profile-image"
@@ -125,14 +125,14 @@ function PostWizard() {
         type="text"
         id="post-input"
         className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
-        disabled={isLoading}
+        disabled={!isSignedIn || isLoading}
         onKeyDown={handleSubmitOnEnter}
         placeholder="Please sign-in to tweet"
       />
       <button
         className="inline-flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-sky-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-sky-600 focus:bg-sky-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-sky-300 disabled:bg-sky-300 disabled:shadow-none"
         onClick={handleSubmit}
-        disabled={isLoading}
+        disabled={!isSignedIn || isLoading}
       >
         Tweet
         {isLoading && (
