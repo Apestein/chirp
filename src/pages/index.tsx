@@ -127,7 +127,7 @@ function PostWizard() {
         className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
         disabled={!isSignedIn || isLoading}
         onKeyDown={handleSubmitOnEnter}
-        placeholder="Please sign-in to tweet"
+        placeholder={isSignedIn ? "Emojis only" : "Please sign-in to tweet"}
       />
       <button
         className="inline-flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-sky-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-sky-600 focus:bg-sky-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-sky-300 disabled:bg-sky-300 disabled:shadow-none"
