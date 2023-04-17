@@ -84,4 +84,23 @@ export const mainRouter = createTRPCRouter({
       })
       return post
     }),
+  updateLikes: privateProcedure
+    .input(
+      z.object({
+        postId: z.string().min(1).max(255),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId
+      const status = await ctx.prisma.post.update({
+        where: {
+          id: input.postId,
+        },
+        data: {
+          likedBy: {
+            connect: { id: userId },
+          },
+        },
+      })
+    }),
 })

@@ -32,8 +32,8 @@ export default function Home({
   return (
     <>
       <Header />
-      <main className="flex max-h-full justify-center overflow-auto">
-        <div className="container relative">
+      <main className="flex justify-center overflow-auto">
+        <div className="container relative h-fit min-h-full border-x border-[#ffffff50]">
           <PostWizard />
           {isLoading ? (
             <svg
@@ -61,7 +61,7 @@ export default function Home({
               />
             </svg>
           ) : (
-            <ul className="border-x border-x-[#ffffff50]">
+            <ul>
               {posts?.map((post) => (
                 <Post {...post} key={post.id} />
               ))}
@@ -113,7 +113,7 @@ function PostWizard() {
   }
 
   return (
-    <section className="flex items-center border-x border-b border-[#ffffff50] border-b-[#ffffff50] p-3 px-3">
+    <section className="flex items-center border-b border-b-[#ffffff50] p-3 px-3">
       <Image
         src={user?.profileImageUrl ?? "/user.svg"}
         alt="profile-image"

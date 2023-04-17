@@ -15,10 +15,15 @@ model Post {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     content String @db.VarChar(255)
-    user User @relation(fields: [authorId], references: [id])
+    user User @relation("Author",fields: [authorId], references: [id])
     authorId String
+    originPostId String?
+    originPost Post? @relation("PostComment", fields: [originPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    comments Post[] @relation("PostComment")
+    likedBy User[]
 
     @@index([authorId])
+    @@index([originPostId])
 }
 
 model User {
@@ -26,5 +31,6 @@ model User {
   createdAt DateTime @default(now())
   username String @db.VarChar(255)
   profileImageUrl String @db.Text
-  posts Post[]
+  posts Post[] @relation("Author")
+  likedPosts Post[]
 }
