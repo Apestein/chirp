@@ -33,7 +33,7 @@ export default function Home({
     <>
       <Header />
       <main className="flex max-h-full justify-center overflow-auto">
-        <div className="container relative h-full border-x border-x-[#ffffff50] pt-3">
+        <div className="relative h-fit border-x border-x-[#ffffff50] pt-3">
           <PostWizard />
           {isLoading ? (
             <svg
