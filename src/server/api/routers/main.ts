@@ -1,5 +1,4 @@
 import { z } from "zod"
-import { clerkClient } from "@clerk/nextjs/server"
 import {
   createTRPCRouter,
   privateProcedure,
@@ -23,6 +22,14 @@ export const mainRouter = createTRPCRouter({
       take: 100,
       include: {
         user: true,
+        _count: {
+          select: { likedBy: true },
+        },
+        likedBy: {
+          where: {
+            id: ctx.userId ?? "",
+          },
+        },
       },
     })
     return posts
@@ -76,31 +83,43 @@ export const mainRouter = createTRPCRouter({
       const authorId = ctx.userId
       const { success } = await ratelimit.limit(authorId)
       if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
-      const post = await ctx.prisma.post.create({
+      await ctx.prisma.post.create({
         data: {
           authorId,
           content: input.content,
         },
       })
-      return post
     }),
   updateLikes: privateProcedure
     .input(
       z.object({
         postId: z.string().min(1).max(255),
+        isLiked: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.userId
-      const status = await ctx.prisma.post.update({
-        where: {
-          id: input.postId,
-        },
-        data: {
-          likedBy: {
-            connect: { id: userId },
+      if (input.isLiked)
+        await ctx.prisma.post.update({
+          where: {
+            id: input.postId,
           },
-        },
-      })
+          data: {
+            likedBy: {
+              disconnect: { id: userId },
+            },
+          },
+        })
+      else
+        await ctx.prisma.post.update({
+          where: {
+            id: input.postId,
+          },
+          data: {
+            likedBy: {
+              connect: { id: userId },
+            },
+          },
+        })
     }),
 })
