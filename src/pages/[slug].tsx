@@ -14,6 +14,7 @@ const ProfilePage: NextPage = () => {
   const { data: postsByUser, isLoading } = api.main.getAllByUser.useQuery({
     authorId,
   })
+  const user = postsByUser?.[0]?.user
   return (
     <>
       <Head>
@@ -24,7 +25,7 @@ const ProfilePage: NextPage = () => {
       <header className="flex flex-col items-start justify-start">
         <figure className="flex h-48 w-full items-end bg-blue-300">
           <Image
-            src={postsByUser?.profileImageUrl ?? "/user.svg"}
+            src={user?.profileImageUrl ?? "/user.svg"}
             alt="profile-image"
             width={96}
             height={96}
@@ -32,7 +33,7 @@ const ProfilePage: NextPage = () => {
           />
         </figure>
         <h1 className="mt-12 w-full border-b border-b-[#ffffff50] pb-3 pl-3 text-xl font-bold">
-          @{postsByUser?.username}
+          @{user?.username}
         </h1>
       </header>
       <main className="relative flex flex-col items-start justify-start overflow-auto">
@@ -63,17 +64,8 @@ const ProfilePage: NextPage = () => {
           </svg>
         ) : (
           <ul className="w-full">
-            {postsByUser?.posts.map((post) => (
-              <Post
-                key={post.id}
-                {...post}
-                user={{
-                  id: postsByUser.id,
-                  createdAt: postsByUser.createdAt,
-                  username: postsByUser.username,
-                  profileImageUrl: postsByUser.profileImageUrl,
-                }}
-              />
+            {postsByUser?.map((post) => (
+              <Post key={post.id} {...post} />
             ))}
           </ul>
         )}

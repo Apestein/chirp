@@ -37,11 +37,11 @@ export default function Post(props: PostWithUser) {
         className="w-16 rounded-full"
       />
       <div className="w-full">
-        <Link href={`@${user.username}?authorId=${authorId}`}>
+        <Link href={`/@${user.username}?authorId=${authorId}`}>
           {user.username} · {dayjs(createdAt).fromNow()}
         </Link>
         <div className="flex justify-between">
-          <Link href={`post/${id}`}>
+          <Link href={`/post/${id}`}>
             <p className="break-all text-xl">{content}</p>
           </Link>
           <div className="flex items-center pr-3">
@@ -50,7 +50,9 @@ export default function Post(props: PostWithUser) {
               aria-hidden="true"
               fill={likedBy.length ? "currentColor" : "none"}
               stroke="currentColor"
-              className="w-8 cursor-pointer rounded-full p-1 text-rose-600 hover:bg-rose-600 hover:bg-opacity-25"
+              className={`w-8 cursor-pointer rounded-full p-1 text-rose-600 ${
+                likedBy.length ? "drop-shadow-[0_0_10px_red]" : ""
+              } `}
               onClick={handleLikeUpdate}
             >
               <g>

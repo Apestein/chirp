@@ -41,15 +41,24 @@ export const mainRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findUnique({
+      const posts = await ctx.prisma.post.findMany({
         where: {
-          id: input.authorId,
+          authorId: input.authorId,
         },
+        orderBy: [{ createdAt: "desc" }],
         include: {
-          posts: true,
+          user: true,
+          _count: {
+            select: { likedBy: true },
+          },
+          likedBy: {
+            where: {
+              id: ctx.userId ?? "",
+            },
+          },
         },
       })
-      return user
+      return posts
     }),
   getPostById: publicProcedure
     .input(
@@ -64,6 +73,14 @@ export const mainRouter = createTRPCRouter({
         },
         include: {
           user: true,
+          _count: {
+            select: { likedBy: true },
+          },
+          likedBy: {
+            where: {
+              id: ctx.userId ?? "",
+            },
+          },
         },
       })
       if (!post) throw new TRPCError({ code: "NOT_FOUND" })

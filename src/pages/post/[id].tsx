@@ -10,7 +10,7 @@ const SinglePostPage: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
   if (typeof id !== "string") return <div>No id error</div>
-  const { data, isLoading } = api.main.getPostById.useQuery({
+  const { data: post, isLoading } = api.main.getPostById.useQuery({
     postId: id,
   })
   return (
@@ -24,7 +24,7 @@ const SinglePostPage: NextPage = () => {
 
       <main className="flex max-h-full flex-col items-center justify-start overflow-auto">
         <div className="container relative h-full border-x border-x-[#ffffff50] pt-3">
-          {isLoading || !data ? (
+          {isLoading || !post ? (
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -50,7 +50,7 @@ const SinglePostPage: NextPage = () => {
               />
             </svg>
           ) : (
-            <Post {...data} />
+            <Post {...post} />
           )}
         </div>
       </main>

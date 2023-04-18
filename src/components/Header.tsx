@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { SignInButton, SignOutButton } from "@clerk/nextjs"
 import { useUser } from "@clerk/nextjs"
+import Link from "next/link"
 
 export default function Header() {
   const { isSignedIn } = useUser()
@@ -23,13 +24,15 @@ export default function Header() {
             </SignInButton>
           )}
         </div>
-        <Image
-          src="/doge-logo.png"
-          alt="doge-logo"
-          width={64}
-          height={64}
-          className="m-auto rounded-full"
-        />
+        <Link href="/" className="m-auto">
+          <Image
+            src="/doge-logo.png"
+            alt="doge-logo"
+            width={64}
+            height={64}
+            className="rounded-full"
+          />
+        </Link>
       </i>
       <section className="grid grid-cols-2 justify-items-center">
         <label>
