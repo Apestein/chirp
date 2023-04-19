@@ -21,7 +21,6 @@ const SinglePostPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-
       <main className="flex max-h-full flex-col items-center justify-start overflow-auto">
         <div className="container relative h-full border-x border-x-[#ffffff50] pt-3">
           {isLoading || !post ? (
