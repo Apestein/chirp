@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "react-hot-toast"
 import "~/styles/globals.css"
 import Head from "next/head"
+import Layout from "~/components/layout"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 const MyApp: AppType = ({ Component, pageProps }) => {
@@ -16,7 +17,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       </Head>
       {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       <Toaster position="bottom-center" reverseOrder={false} />
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </ClerkProvider>
   )
 }

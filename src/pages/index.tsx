@@ -1,6 +1,4 @@
 import Post from "~/components/Post"
-import Footer from "~/components/Footer"
-import Header from "~/components/Header"
 import PostWizard from "~/components/PostWizard"
 import { api } from "~/utils/api"
 import type { InferGetStaticPropsType } from "next"
@@ -29,7 +27,6 @@ export default function Home({
   const { data: posts, isLoading } = api.main.getAll.useQuery()
   return (
     <>
-      <Header />
       <main className="flex justify-center overflow-auto">
         <div className="container relative h-fit min-h-full border-x border-[#ffffff50]">
           <PostWizard />
@@ -75,7 +72,6 @@ export default function Home({
           ))}
         </ul>
       </main>
-      <Footer />
     </>
   )
 }
