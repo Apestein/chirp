@@ -18,12 +18,15 @@ const ratelimit = new Ratelimit({
 export const mainRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
+      where: {
+        originPostId: null,
+      },
       orderBy: [{ createdAt: "desc" }],
       take: 100,
       include: {
         user: true,
         _count: {
-          select: { likedBy: true },
+          select: { likedBy: true, comments: true },
         },
         likedBy: {
           where: {
@@ -74,11 +77,26 @@ export const mainRouter = createTRPCRouter({
         include: {
           user: true,
           _count: {
-            select: { likedBy: true },
+            select: { likedBy: true, comments: true },
           },
           likedBy: {
             where: {
               id: ctx.userId ?? "",
+            },
+          },
+          comments: {
+            take: 100,
+            orderBy: [{ createdAt: "desc" }],
+            include: {
+              user: true,
+              _count: {
+                select: { likedBy: true, comments: true },
+              },
+              likedBy: {
+                where: {
+                  id: ctx.userId ?? "",
+                },
+              },
             },
           },
         },
@@ -94,6 +112,7 @@ export const mainRouter = createTRPCRouter({
           .emoji("Only emojis are allowed")
           .min(1, "Message is empty")
           .max(280),
+        originPostId: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -104,6 +123,7 @@ export const mainRouter = createTRPCRouter({
         data: {
           authorId,
           content: input.content,
+          originPostId: input.originPostId,
         },
       })
     }),

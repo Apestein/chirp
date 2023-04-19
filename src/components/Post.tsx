@@ -14,7 +14,7 @@ export default function Post(props: PostWithUser) {
   const ctx = api.useContext()
   const { mutate, isLoading } = api.main.updateLikes.useMutation({
     onSuccess: () => {
-      void ctx.main.getAll.invalidate()
+      void ctx.main.invalidate()
     },
     onError: (e) => {
       const otherErrorMessage = e.message

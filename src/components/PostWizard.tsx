@@ -3,7 +3,12 @@ import { useUser } from "@clerk/nextjs"
 import { toast } from "react-hot-toast"
 import { api } from "~/utils/api"
 
-export default function PostWizard() {
+export default function PostWizard({
+  originPostId,
+}: {
+  originPostId?: string
+}) {
+  const tweetOrReply = originPostId ? "Reply" : "Tweet"
   const { user, isSignedIn } = useUser()
   const ctx = api.useContext()
   const { mutate, isLoading } = api.main.create.useMutation({
@@ -12,7 +17,7 @@ export default function PostWizard() {
         "#post-input"
       ) as HTMLInputElement
       postInput.value = ""
-      void ctx.main.getAll.invalidate()
+      void ctx.main.invalidate()
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors.content?.[0]
@@ -30,7 +35,7 @@ export default function PostWizard() {
 
   function handleSubmit() {
     const postInput = document.querySelector("#post-input") as HTMLInputElement
-    mutate({ content: postInput.value })
+    mutate({ content: postInput.value, originPostId })
   }
 
   return (
@@ -40,7 +45,7 @@ export default function PostWizard() {
         alt="profile-image"
         width={64}
         height={64}
-        className="rounded-full "
+        className="mr-3 rounded-full"
       />
       <input
         type="text"
@@ -51,11 +56,11 @@ export default function PostWizard() {
         placeholder={isSignedIn ? "Emojis only" : "Please sign-in to tweet"}
       />
       <button
-        className="inline-flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-sky-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-sky-600 focus:bg-sky-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-sky-300 disabled:bg-sky-300 disabled:shadow-none"
+        className="ml-1 inline-flex h-12 items-center justify-center gap-2 justify-self-center whitespace-nowrap rounded bg-sky-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-sky-600 focus:bg-sky-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-sky-300 disabled:bg-sky-300 disabled:shadow-none"
         onClick={handleSubmit}
         disabled={!isSignedIn || isLoading}
       >
-        Tweet
+        {tweetOrReply}
         {isLoading && (
           <svg
             className="h-8 w-8 animate-spin text-white"
