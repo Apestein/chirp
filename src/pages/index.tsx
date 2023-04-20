@@ -7,8 +7,6 @@ import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import InfiniteScroll from "react-infinite-scroll-component"
-import { totalmem } from "os"
-import { error } from "console"
 
 dayjs.extend(relativeTime)
 
@@ -28,33 +26,39 @@ export const getStaticProps = async () => {
 export default function Home({
   trends,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  // const { data, isLoading, isError } = api.main.getAll.useQuery({})
-  // const posts = data?.posts
   const res = api.main.getAll.useInfiniteQuery(
     {
-      limit: 5,
+      limit: 50,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   )
-  const { data, isLoading, fetchNextPage } = res
-  const posts = data?.pages[0]?.posts
+  const { data, isLoading, hasNextPage, fetchNextPage } = res
+  const posts = aggregatePosts()
 
-  async function handleFetchMorePosts() {
-    const nextPage = await fetchNextPage()
-    const pages = nextPage.data?.pages
-    const posts = pages?.reduce((prev, current, index) => {
-      console.log({ prev, current, index })
-      return current.posts.concat(prev.posts)
-    })
-    console.log(posts)
+  function aggregatePosts() {
+    const pages = data?.pages
+    const posts = pages?.reduce((prev, current) => {
+      const combinedPosts = prev.posts.concat(current.posts)
+      const deepCopy = JSON.parse(JSON.stringify(prev)) as typeof prev
+      deepCopy.posts = combinedPosts
+      return deepCopy
+    }).posts
+    return posts
   }
 
-  if (!posts) return <p>No posts error</p>
+  function countPosts() {
+    let count = 0
+    const pages = data?.pages
+    if (!pages) throw "No pages"
+    for (const page of pages) count += page.posts.length
+    return count
+  }
+
   return (
     <>
-      <main className="flex justify-center overflow-auto">
+      <main id="infinite-scroll" className="flex justify-center overflow-auto">
         <div className="container relative h-fit min-h-full border-x border-[#ffffff50]">
           <PostWizard />
           {isLoading ? (
@@ -83,11 +87,18 @@ export default function Home({
               />
             </svg>
           ) : (
-            <div onClick={handleFetchMorePosts}>
+            <InfiniteScroll
+              dataLength={countPosts()}
+              next={fetchNextPage}
+              hasMore={hasNextPage ?? false}
+              loader={<p>Loading...</p>}
+              scrollableTarget="infinite-scroll"
+              endMessage={<p className="p-3">The beginning of time...</p>}
+            >
               {posts?.map((post) => (
                 <Post {...post} key={post.id} />
               ))}
-            </div>
+            </InfiniteScroll>
           )}
         </div>
         <ul className="m-3 hidden sm:block">

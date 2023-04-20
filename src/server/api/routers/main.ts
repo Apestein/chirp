@@ -151,6 +151,8 @@ export const mainRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.userId
+      const { success } = await ratelimit.limit(userId)
+      if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
       if (input.isLiked)
         await ctx.prisma.post.update({
           where: {

@@ -8,7 +8,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 
 dayjs.extend(relativeTime)
 
-type PostWithUser = RouterOutputs["main"]["getAll"][number]
+type PostWithUser = RouterOutputs["main"]["getAll"]["posts"][number]
 export default function Post(props: PostWithUser) {
   const { id, authorId, createdAt, content, user, _count, likedBy } = props
   const ctx = api.useContext()
@@ -41,9 +41,7 @@ export default function Post(props: PostWithUser) {
           {user.username} · {dayjs(createdAt).fromNow()}
         </Link>
         <div className="flex justify-between">
-          <Link href={`/post/${id}`}>
-            <p className="break-all text-xl">{content}</p>
-          </Link>
+          <p className="break-all text-xl">{content}</p>
         </div>
       </div>
       <div className="pr-3">
@@ -64,9 +62,11 @@ export default function Post(props: PostWithUser) {
           </svg>
           <p>{_count.likedBy}</p>
         </div>
-        <p className="text-sm text-neutral-400">
-          {_count.comments}&nbsp;comments
-        </p>
+        <Link href={`/post/${id}`}>
+          <p className="text-sm text-neutral-400">
+            {_count.comments}&nbsp;comments
+          </p>
+        </Link>
       </div>
     </li>
   )
