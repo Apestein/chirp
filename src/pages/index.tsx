@@ -6,6 +6,7 @@ import { client } from "~/utils/contentful-client"
 import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import InfiniteScroll from "react-infinite-scroll-component"
 
 dayjs.extend(relativeTime)
 
@@ -18,13 +19,15 @@ export const getStaticProps = async () => {
     props: {
       trends: data,
     },
+    revalidate: 60,
   }
 }
 
 export default function Home({
   trends,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { data: posts, isLoading } = api.main.getAll.useQuery()
+  const { data: posts, isLoading, isError } = api.main.getAll.useQuery()
+  if (isError) return <p>No posts error</p>
   return (
     <>
       <main className="flex justify-center overflow-auto">
