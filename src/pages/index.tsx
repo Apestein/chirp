@@ -7,6 +7,8 @@ import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import InfiniteScroll from "react-infinite-scroll-component"
+import { totalmem } from "os"
+import { error } from "console"
 
 dayjs.extend(relativeTime)
 
@@ -26,8 +28,30 @@ export const getStaticProps = async () => {
 export default function Home({
   trends,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { data: posts, isLoading, isError } = api.main.getAll.useQuery()
-  if (isError) return <p>No posts error</p>
+  // const { data, isLoading, isError } = api.main.getAll.useQuery({})
+  // const posts = data?.posts
+  const res = api.main.getAll.useInfiniteQuery(
+    {
+      limit: 5,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  )
+  const { data, isLoading, fetchNextPage } = res
+  const posts = data?.pages[0]?.posts
+
+  async function handleFetchMorePosts() {
+    const nextPage = await fetchNextPage()
+    const pages = nextPage.data?.pages
+    const posts = pages?.reduce((prev, current, index) => {
+      console.log({ prev, current, index })
+      return current.posts.concat(prev.posts)
+    })
+    console.log(posts)
+  }
+
+  if (!posts) return <p>No posts error</p>
   return (
     <>
       <main className="flex justify-center overflow-auto">
@@ -59,11 +83,11 @@ export default function Home({
               />
             </svg>
           ) : (
-            <ul>
+            <div onClick={handleFetchMorePosts}>
               {posts?.map((post) => (
                 <Post {...post} key={post.id} />
               ))}
-            </ul>
+            </div>
           )}
         </div>
         <ul className="m-3 hidden sm:block">

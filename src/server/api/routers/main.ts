@@ -16,27 +16,42 @@ const ratelimit = new Ratelimit({
 })
 
 export const mainRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    const posts = await ctx.prisma.post.findMany({
-      where: {
-        originPostId: null,
-      },
-      orderBy: [{ createdAt: "desc" }],
-      take: 100,
-      include: {
-        user: true,
-        _count: {
-          select: { likedBy: true, comments: true },
+  getAll: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 100
+      const cursor = input.cursor
+      const posts = await ctx.prisma.post.findMany({
+        take: limit + 1,
+        where: {
+          originPostId: null,
         },
-        likedBy: {
-          where: {
-            id: ctx.userId ?? "",
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: [{ createdAt: "desc" }],
+        include: {
+          user: true,
+          _count: {
+            select: { likedBy: true, comments: true },
+          },
+          likedBy: {
+            where: {
+              id: ctx.userId ?? "",
+            },
           },
         },
-      },
-    })
-    return posts
-  }),
+      })
+      let nextCursor: typeof cursor | undefined = undefined
+      if (posts.length > limit) {
+        const nextItem = posts.pop()
+        nextCursor = nextItem!.id
+      }
+      return { posts, nextCursor }
+    }),
   getAllByUser: publicProcedure
     .input(
       z.object({
