@@ -18,7 +18,7 @@ function Header() {
   const ctx = api.useContext()
   const { userId, isSignedIn } = useAuth()
   useEffect(() => {
-    console.log("firing")
+    console.log("Auth State Changed")
     void ctx.main.invalidate()
   }, [userId])
   return (
