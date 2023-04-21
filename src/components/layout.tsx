@@ -2,7 +2,7 @@ import Image from "next/image"
 import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs"
 import Link from "next/link"
 import { type PropsWithChildren, useEffect } from "react"
-import dogeLogo from "@/public/doge-logo.png"
+import dogeLogo from "../../public/doge-logo.png"
 import { api } from "~/utils/api"
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -19,7 +19,6 @@ function Header() {
   const ctx = api.useContext()
   const { isSignedIn } = useAuth()
   useEffect(() => {
-    console.log(isSignedIn)
     void ctx.main.invalidate()
   }, [isSignedIn])
   return (

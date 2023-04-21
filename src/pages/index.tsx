@@ -41,9 +41,10 @@ export default function Home({
     const pages = data?.pages
     const posts = pages?.reduce((prev, current) => {
       const combinedPosts = prev.posts.concat(current.posts)
-      const deepCopy = JSON.parse(JSON.stringify(prev)) as typeof prev
-      deepCopy.posts = combinedPosts
-      return deepCopy
+      // const deepCopy = JSON.parse(JSON.stringify(prev)) as typeof prev
+      const shallowCopy = { ...prev }
+      shallowCopy.posts = combinedPosts
+      return shallowCopy
     }).posts
     return posts
   }
