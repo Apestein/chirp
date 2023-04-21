@@ -42,7 +42,12 @@ function Header() {
           )}
         </div>
         <Link href="/" className="m-auto">
-          <Image src={dogeLogo} alt="doge-logo" className="w-16" />
+          <Image
+            src={dogeLogo}
+            alt="doge-logo"
+            placeholder="blur"
+            className="w-16"
+          />
         </Link>
       </i>
       <section className="grid grid-cols-2 justify-items-center">
