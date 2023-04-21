@@ -2,6 +2,7 @@ import Image from "next/image"
 import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs"
 import Link from "next/link"
 import { type PropsWithChildren, useEffect } from "react"
+import dogeLogo from "@/public/doge-logo.png"
 import { api } from "~/utils/api"
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -16,11 +17,11 @@ export default function Layout({ children }: PropsWithChildren) {
 
 function Header() {
   const ctx = api.useContext()
-  const { userId, isSignedIn } = useAuth()
+  const { isSignedIn } = useAuth()
   useEffect(() => {
-    console.log("Auth State Changed")
+    console.log(isSignedIn)
     void ctx.main.invalidate()
-  }, [userId])
+  }, [isSignedIn])
   return (
     <header className="border-b border-b-[#ffffff50]">
       <i className="relative flex p-1">
@@ -41,13 +42,7 @@ function Header() {
           )}
         </div>
         <Link href="/" className="m-auto">
-          <Image
-            src="/doge-logo.png"
-            alt="doge-logo"
-            width={64}
-            height={64}
-            className="rounded-full"
-          />
+          <Image src={dogeLogo} alt="doge-logo" className="w-16" />
         </Link>
       </i>
       <section className="grid grid-cols-2 justify-items-center">
