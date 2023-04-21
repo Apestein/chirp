@@ -1,8 +1,8 @@
 import Image from "next/image"
-import { SignInButton, SignOutButton } from "@clerk/nextjs"
-import { useUser } from "@clerk/nextjs"
+import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs"
 import Link from "next/link"
-import type { PropsWithChildren } from "react"
+import { type PropsWithChildren, useEffect } from "react"
+import { api } from "~/utils/api"
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
@@ -15,7 +15,12 @@ export default function Layout({ children }: PropsWithChildren) {
 }
 
 function Header() {
-  const { isSignedIn } = useUser()
+  const ctx = api.useContext()
+  const { userId, isSignedIn } = useAuth()
+  useEffect(() => {
+    console.log("firing")
+    void ctx.main.invalidate()
+  }, [userId])
   return (
     <header className="border-b border-b-[#ffffff50]">
       <i className="relative flex p-1">
