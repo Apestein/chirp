@@ -11,13 +11,14 @@ import InfiniteScroll from "react-infinite-scroll-component"
 dayjs.extend(relativeTime)
 
 export const getStaticProps = async () => {
-  const res = await client.getEntries({
-    content_type: "trending",
-  })
-  const data = res.items.map((item) => item.fields.topic) as string[]
+  const res = await client.getEntries()
+  const firstObj = res.items.shift()
+  const topicOfTheDay = firstObj?.fields.topicoftheday as string
+  const trends = res.items.map((item) => item.fields.topic) as string[]
   return {
     props: {
-      trends: data,
+      trends,
+      topicOfTheDay,
     },
     revalidate: 60,
   }
@@ -25,6 +26,7 @@ export const getStaticProps = async () => {
 
 export default function Home({
   trends,
+  topicOfTheDay,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const res = api.main.getAll.useInfiniteQuery(
     {
@@ -41,7 +43,6 @@ export default function Home({
     const pages = data?.pages
     const posts = pages?.reduce((prev, current) => {
       const combinedPosts = prev.posts.concat(current.posts)
-      // const deepCopy = JSON.parse(JSON.stringify(prev)) as typeof prev
       const shallowCopy = { ...prev }
       shallowCopy.posts = combinedPosts
       return shallowCopy
@@ -105,7 +106,7 @@ export default function Home({
         <aside className="m-3 hidden sm:block">
           <div className="mb-3">
             <h2 className="mb-3 text-xl underline">Topic of The Day</h2>
-            <p>Is t3 stack best stack?</p>
+            <p>{topicOfTheDay}</p>
           </div>
           <ul>
             <h2 className="mb-3 text-xl underline">Trending</h2>
