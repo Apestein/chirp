@@ -102,14 +102,20 @@ export default function Home({
             </InfiniteScroll>
           )}
         </div>
-        <ul className="m-3 hidden sm:block">
-          <h2 className="mb-3 text-xl">Trending</h2>
-          {trends.map((trend, index) => (
-            <li key={crypto.randomBytes(20).toString("hex")}>
-              {++index}.&nbsp;{trend}
-            </li>
-          ))}
-        </ul>
+        <aside className="m-3 hidden sm:block">
+          <div className="mb-3">
+            <h2 className="mb-3 text-xl underline">Topic of The Day</h2>
+            <p>Is t3 stack best stack?</p>
+          </div>
+          <ul>
+            <h2 className="mb-3 text-xl underline">Trending</h2>
+            {trends.map((trend, index) => (
+              <li key={crypto.randomBytes(20).toString("hex")}>
+                {++index}.&nbsp;{trend}
+              </li>
+            ))}
+          </ul>
+        </aside>
       </main>
     </>
   )

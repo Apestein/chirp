@@ -45,7 +45,7 @@ function Header() {
             src={dogeLogo}
             alt="doge-logo"
             placeholder="blur"
-            className="w-16"
+            className="w-14"
           />
         </Link>
       </i>

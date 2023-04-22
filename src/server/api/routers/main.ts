@@ -122,11 +122,7 @@ export const mainRouter = createTRPCRouter({
   create: privateProcedure
     .input(
       z.object({
-        content: z
-          .string()
-          // .emoji("Only emojis are allowed")
-          .min(1, "Message is empty")
-          .max(255),
+        content: z.string().min(1, "Message is empty").max(255),
         originPostId: z.string().optional(),
       })
     )
