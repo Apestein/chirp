@@ -5,6 +5,7 @@ _Features:_
 - Authentication System
 - Rate Limiting
 - Infinitely Nestable Comments
+- Infinite Scroll
 - Likes functionality
 - Responsive Design
 - CMS
