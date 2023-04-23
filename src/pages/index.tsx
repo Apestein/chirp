@@ -7,6 +7,7 @@ import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import InfiniteScroll from "react-infinite-scroll-component"
+import { useAutoAnimate } from "@formkit/auto-animate/react"
 
 dayjs.extend(relativeTime)
 
@@ -30,7 +31,7 @@ export default function Home({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const res = api.main.getAll.useInfiniteQuery(
     {
-      limit: 50,
+      limit: 25,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -38,6 +39,8 @@ export default function Home({
   )
   const { data, isLoading, hasNextPage, fetchNextPage } = res
   const posts = aggregatePosts()
+
+  const [parent] = useAutoAnimate()
 
   function aggregatePosts() {
     const pages = data?.pages
@@ -97,9 +100,11 @@ export default function Home({
               scrollableTarget="infinite-scroll"
               endMessage={<p className="p-3">The beginning of time...</p>}
             >
-              {posts?.map((post) => (
-                <Post {...post} key={post.id} />
-              ))}
+              <ul ref={parent}>
+                {posts?.map((post) => (
+                  <Post {...post} key={post.id} />
+                ))}
+              </ul>
             </InfiniteScroll>
           )}
         </div>
