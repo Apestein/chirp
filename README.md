@@ -7,6 +7,7 @@ _Features:_
 - Infinitely Nestable Comments
 - Infinite Scroll
 - Likes functionality
+- Toast Notification
 - Responsive Design
 
 _Technologies Used:_
