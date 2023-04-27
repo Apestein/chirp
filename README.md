@@ -20,6 +20,6 @@ _Technologies Used:_
 - Upstash (Ratelimiter)
 - Axiom (Logging)
 - Zod
-- TanStack Query
+- React Query
 - React Hot Toast
 - Contentful (Headless CMS)
