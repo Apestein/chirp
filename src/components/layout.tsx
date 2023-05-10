@@ -2,7 +2,6 @@ import Image from "next/image"
 import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs"
 import Link from "next/link"
 import { type PropsWithChildren, useEffect } from "react"
-import dogeLogo from "../../public/doge-logo.png"
 import { api } from "~/utils/api"
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -41,12 +40,7 @@ function Header() {
           )}
         </div>
         <Link href="/" className="m-auto">
-          <Image
-            src={dogeLogo}
-            alt="doge-logo"
-            placeholder="blur"
-            className="w-14"
-          />
+          <Image src="/doge-logo.png" alt="doge-logo" width={56} height={65} />
         </Link>
       </i>
       <section className="grid grid-cols-2 justify-items-center">

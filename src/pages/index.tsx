@@ -96,6 +96,7 @@ export default function Home({
               loader={<p>Loading...</p>}
               scrollableTarget="infinite-scroll"
               endMessage={<p className="p-3">The beginning of time...</p>}
+              scrollThreshold={1}
             >
               {posts?.map((post) => (
                 <Post {...post} key={post.id} />
