@@ -28,7 +28,7 @@ export default function Post(props: PostWithUser) {
     mutate({ postId: id, isLiked: likedBy.length ? true : false })
   }
   return (
-    <li className="animate-scaleIn flex items-center gap-3 border-b border-b-[#ffffff50] py-3 pl-3">
+    <li className="flex items-center gap-3 border-b border-b-[#ffffff50] py-3 pl-3">
       <Image
         src={user.profileImageUrl}
         alt="profile-image"

@@ -1,4 +1,3 @@
-import Post from "~/components/Post"
 import PostWizard from "~/components/PostWizard"
 import { api } from "~/utils/api"
 import type { InferGetStaticPropsType } from "next"
@@ -6,7 +5,7 @@ import { client } from "~/utils/contentful-client"
 import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import InfiniteScroll from "react-infinite-scroll-component"
+import InfiniteScroller from "~/components/infinite-scroller"
 
 dayjs.extend(relativeTime)
 
@@ -36,7 +35,8 @@ export default function Home({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     }
   )
-  const { data, isLoading, hasNextPage, fetchNextPage } = res
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    res
   const posts = aggregatePosts()
 
   function aggregatePosts() {
@@ -48,14 +48,6 @@ export default function Home({
       return shallowCopy
     }).posts
     return posts
-  }
-
-  function countPosts() {
-    let count = 0
-    const pages = data?.pages
-    if (!pages) throw "No pages"
-    for (const page of pages) count += page.posts.length
-    return count
   }
 
   return (
@@ -89,19 +81,12 @@ export default function Home({
               />
             </svg>
           ) : (
-            <InfiniteScroll
-              dataLength={countPosts()}
-              next={fetchNextPage}
-              hasMore={hasNextPage ?? false}
-              loader={<p>Loading...</p>}
-              scrollableTarget="infinite-scroll"
-              endMessage={<p className="p-3">The beginning of time...</p>}
-              scrollThreshold={0.99}
-            >
-              {posts?.map((post) => (
-                <Post {...post} key={post.id} />
-              ))}
-            </InfiniteScroll>
+            <InfiniteScroller
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage ?? true}
+              isFetchingNextPage={isFetchingNextPage}
+              posts={posts}
+            />
           )}
         </div>
         <aside className="m-3 hidden sm:block">
