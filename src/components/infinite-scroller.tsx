@@ -20,12 +20,17 @@ export default function InfiniteScroller(props: {
   const { fetchNextPage, posts, isFetchingNextPage, hasNextPage } = props
   const observerTarget = useRef(null)
 
-  const [parent] = useAutoAnimate()
+  const [parent, enableAnimations] = useAutoAnimate()
+
+  useEffect(() => {
+    if (isFetchingNextPage) enableAnimations(false)
+    else setTimeout(() => enableAnimations(true), 2000)
+  }, [isFetchingNextPage, enableAnimations])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]!.isIntersecting) {
+        if (entries[0]?.isIntersecting) {
           void fetchNextPage()
         }
       },
@@ -41,7 +46,7 @@ export default function InfiniteScroller(props: {
         observer.unobserve(observerTarget.current)
       }
     }
-  }, [observerTarget])
+  }, [observerTarget, fetchNextPage])
 
   return (
     <div>
@@ -50,7 +55,7 @@ export default function InfiniteScroller(props: {
           <Post {...post} key={post.id} />
         ))}
       </ul>
-      {isFetchingNextPage && <p className="p-3">Loading...</p>}
+      {hasNextPage && <p className="p-3">Loading...</p>}
       {!hasNextPage && <p className="p-3">The beginning of time...</p>}
       <div ref={observerTarget}></div>
     </div>

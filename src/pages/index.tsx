@@ -37,7 +37,7 @@ export default function Home({
   )
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     res
-  const posts = aggregatePosts()
+  // const posts = aggregatePosts()
 
   function aggregatePosts() {
     const pages = data?.pages
@@ -85,7 +85,7 @@ export default function Home({
               fetchNextPage={fetchNextPage}
               hasNextPage={hasNextPage ?? true}
               isFetchingNextPage={isFetchingNextPage}
-              posts={posts}
+              posts={aggregatePosts()}
             />
           )}
         </div>
