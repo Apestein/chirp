@@ -23,8 +23,10 @@ export default function InfiniteScroller(props: {
   const [parent, enableAnimations] = useAutoAnimate()
 
   useEffect(() => {
-    if (isFetchingNextPage) enableAnimations(false)
-    else setTimeout(() => enableAnimations(true), 2000)
+    enableAnimations(false)
+    const timeOutId = setTimeout(() => enableAnimations(true), 1000)
+
+    return () => clearTimeout(timeOutId)
   }, [isFetchingNextPage, enableAnimations])
 
   useEffect(() => {
@@ -55,9 +57,9 @@ export default function InfiniteScroller(props: {
           <Post {...post} key={post.id} />
         ))}
       </ul>
+      <div ref={observerTarget}></div>
       {hasNextPage && <p className="p-3">Loading...</p>}
       {!hasNextPage && <p className="p-3">The beginning of time...</p>}
-      <div ref={observerTarget}></div>
     </div>
   )
 }
