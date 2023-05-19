@@ -52,6 +52,33 @@ export const mainRouter = createTRPCRouter({
       }
       return { posts, nextCursor }
     }),
+  getFollowing: privateProcedure.query(async ({ ctx }) => {
+    const usersFollowed = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.userId,
+      },
+      select: {
+        follows: {
+          select: {
+            posts: {
+              include: {
+                user: true,
+                _count: {
+                  select: { likedBy: true, comments: true },
+                },
+                likedBy: {
+                  where: {
+                    id: ctx.userId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    return usersFollowed
+  }),
   getAllByUser: publicProcedure
     .input(
       z.object({
@@ -65,7 +92,18 @@ export const mainRouter = createTRPCRouter({
         },
         orderBy: [{ createdAt: "desc" }],
         include: {
-          user: true,
+          user: {
+            include: {
+              followers: {
+                where: {
+                  id: ctx.userId ?? "",
+                },
+              },
+              _count: {
+                select: { followers: true, follows: true },
+              },
+            },
+          },
           _count: {
             select: { likedBy: true, comments: true },
           },
@@ -165,6 +203,40 @@ export const mainRouter = createTRPCRouter({
           },
           data: {
             likedBy: {
+              connect: { id: userId },
+            },
+          },
+        })
+    }),
+  updateFollowers: privateProcedure
+    .input(
+      z.object({
+        userToFollowId: z.string().min(1).max(255),
+        isFollowed: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId
+      if (userId === input.userToFollowId)
+        throw new TRPCError({ code: "FORBIDDEN" })
+      if (input.isFollowed)
+        await ctx.prisma.user.update({
+          where: {
+            id: input.userToFollowId,
+          },
+          data: {
+            followers: {
+              disconnect: { id: userId },
+            },
+          },
+        })
+      else
+        await ctx.prisma.user.update({
+          where: {
+            id: input.userToFollowId,
+          },
+          data: {
+            followers: {
               connect: { id: userId },
             },
           },
