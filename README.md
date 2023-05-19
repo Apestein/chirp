@@ -8,7 +8,8 @@ _Features:_
 - Rate Limiting
 - Infinitely Nestable Comments
 - Infinite Scroll
-- Likes functionality
+- Like/Unlike
+- Follow/Unfollow
 - Toast Notification
 - Responsive Design
 
