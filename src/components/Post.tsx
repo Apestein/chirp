@@ -34,7 +34,7 @@ export default function Post(props: PostWithUser) {
         alt="profile-image"
         width={64}
         height={64}
-        className="rounded-full"
+        className="rounded-full h-16 w-16"
       />
       <div className="w-full">
         <Link href={`/@${user.username}?authorId=${authorId}`}>
