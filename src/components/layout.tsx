@@ -53,7 +53,7 @@ function Header() {
           <div
             className={`${
               pathName === "/" ? "bg-blue-500" : ""
-            } mt-2 h-1 rounded-xl bg-transparent`}
+            } mt-2 h-1 rounded-xl`}
           ></div>
         </label>
         <label>
@@ -61,7 +61,7 @@ function Header() {
           <div
             className={`${
               pathName === "/following" ? "bg-blue-500" : ""
-            } mt-2 h-1 rounded-xl bg-transparent`}
+            } mt-2 h-1 rounded-xl`}
           ></div>
         </label>
       </section>

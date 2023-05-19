@@ -5,7 +5,8 @@ import { client } from "~/utils/contentful-client"
 import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import InfiniteScroller from "~/components/infinite-scroller"
+import Post from "~/components/Post"
+import { RouterOutputs } from "~/utils/api"
 
 dayjs.extend(relativeTime)
 
@@ -27,27 +28,27 @@ export default function FollowingPage({
   trends,
   topicOfTheDay,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const res = api.main.getAll.useInfiniteQuery(
-    {
-      limit: 25,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  )
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-    res
+  const { data, isLoading } = api.main.getFollowing.useQuery()
 
   function aggregatePosts() {
-    const pages = data?.pages
-    const posts = pages?.reduce((prev, current) => {
+    const users = data?.follows
+    const posts = users?.reduce((prev, current) => {
       const combinedPosts = prev.posts.concat(current.posts)
       const shallowCopy = { ...prev }
       shallowCopy.posts = combinedPosts
       return shallowCopy
     }).posts
-    return posts
+    if (!posts) return
+    const sortedPosts = sortPosts(posts)
+    return sortedPosts
   }
+
+  type Posts = RouterOutputs["main"]["getAll"]["posts"]
+  function sortPosts(posts: Posts) {
+    return posts.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+  }
+
+  const posts = aggregatePosts()
 
   return (
     <main className="flex justify-center overflow-auto">
@@ -79,12 +80,13 @@ export default function FollowingPage({
             />
           </svg>
         ) : (
-          <InfiniteScroller
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage ?? true}
-            isFetchingNextPage={isFetchingNextPage}
-            posts={aggregatePosts()}
-          />
+          <div>
+            <ul>
+              {posts?.map((post) => (
+                <Post key={post.id} {...post} />
+              ))}
+            </ul>
+          </div>
         )}
       </div>
       <aside className="m-3 hidden sm:block">
