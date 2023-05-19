@@ -1,4 +1,3 @@
-import PostWizard from "~/components/PostWizard"
 import { api } from "~/utils/api"
 import type { InferGetStaticPropsType } from "next"
 import { client } from "~/utils/contentful-client"
@@ -6,7 +5,7 @@ import crypto from "crypto"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Post from "~/components/Post"
-import { RouterOutputs } from "~/utils/api"
+import { type RouterOutputs } from "~/utils/api"
 
 dayjs.extend(relativeTime)
 
@@ -53,7 +52,6 @@ export default function FollowingPage({
   return (
     <main className="flex justify-center overflow-auto">
       <div className="container relative h-fit min-h-full border-x border-[#ffffff50]">
-        <PostWizard />
         {isLoading ? (
           <svg
             viewBox="0 0 24 24"
