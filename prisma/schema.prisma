@@ -16,8 +16,8 @@ model Post {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     content String @db.VarChar(255)
-    user User @relation("Author",fields: [authorId], references: [id])
     authorId String
+    user User @relation("Author",fields: [authorId], references: [id])
     originPostId String?
     originPost Post? @relation("PostComment", fields: [originPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     comments Post[] @relation("PostComment")
@@ -34,4 +34,6 @@ model User {
   profileImageUrl String @db.Text
   posts Post[] @relation("Author")
   likedPosts Post[]
+  followers User[]  @relation(name: "Followers")
+  follows   User[]  @relation(name: "Followers")
 }
