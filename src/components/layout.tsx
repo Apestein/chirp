@@ -3,6 +3,7 @@ import { SignInButton, SignOutButton, useAuth } from "@clerk/nextjs"
 import Link from "next/link"
 import { type PropsWithChildren, useEffect } from "react"
 import { api } from "~/utils/api"
+import { useRouter } from "next/router"
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
@@ -20,6 +21,9 @@ function Header() {
   useEffect(() => {
     void ctx.main.invalidate()
   }, [isSignedIn])
+
+  const router = useRouter()
+  const pathName = router.pathname
   return (
     <header className="border-b border-b-[#ffffff50]">
       <i className="relative flex p-1">
@@ -45,19 +49,20 @@ function Header() {
       </i>
       <section className="grid grid-cols-2 justify-items-center">
         <label>
-          <input
-            type="radio"
-            name="forYou-following"
-            defaultChecked
-            className="peer hidden"
-          />
-          For you
-          <div className="mt-2 h-1 rounded-xl bg-transparent peer-checked:bg-blue-500"></div>
+          <Link href="/">For you</Link>
+          <div
+            className={`${
+              pathName === "/" ? "bg-blue-500" : ""
+            } mt-2 h-1 rounded-xl bg-transparent`}
+          ></div>
         </label>
         <label>
-          <input type="radio" name="forYou-following" className="peer hidden" />
-          Following
-          <div className="mt-2 h-1 rounded-xl bg-transparent peer-checked:bg-blue-500"></div>
+          <Link href="/following">Following</Link>
+          <div
+            className={`${
+              pathName === "/following" ? "bg-blue-500" : ""
+            } mt-2 h-1 rounded-xl bg-transparent`}
+          ></div>
         </label>
       </section>
     </header>

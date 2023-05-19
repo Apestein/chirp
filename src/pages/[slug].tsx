@@ -4,6 +4,7 @@ import { useRouter } from "next/router"
 import Image from "next/image"
 import { api } from "~/utils/api"
 import Post from "~/components/Post"
+import { toast } from "react-hot-toast"
 
 const ProfilePage: NextPage = () => {
   const router = useRouter()
@@ -13,7 +14,30 @@ const ProfilePage: NextPage = () => {
   const { data: postsByUser, isLoading } = api.main.getAllByUser.useQuery({
     authorId,
   })
+
+  const ctx = api.useContext()
+  const { mutate, isLoading: isFollowing } =
+    api.main.updateFollowers.useMutation({
+      onSuccess: () => {
+        console.log("success")
+        void ctx.main.getAllByUser.invalidate()
+      },
+      onError: (e) => {
+        const otherErrorMessage = e.message
+        if (otherErrorMessage) toast.error(otherErrorMessage)
+        else toast.error("unknown error")
+      },
+    })
+
   const user = postsByUser?.[0]?.user
+  function follow() {
+    if (!user?.id) {
+      toast.error("Failed to follow")
+      return
+    }
+    mutate({ userToFollowId: user.id })
+  }
+
   return (
     <>
       <Head>
@@ -32,9 +56,23 @@ const ProfilePage: NextPage = () => {
               className="relative left-4 top-[48px] rounded-full border-4 border-black"
             />
           </figure>
-          <h1 className="mt-12 w-full border-b border-b-[#ffffff50] pb-3 pl-3 text-xl font-bold">
-            @{user?.username}
-          </h1>
+          <div className="flex items-center justify-between border-b border-b-[#ffffff50] pr-3 ">
+            <div className="mt-12 flex w-full items-center gap-3 pb-3 pl-3">
+              <h2 className="text-xl font-bold">@{user?.username}</h2>
+              <h2 className="text-sm text-slate-300">
+                Followers {user?.followers.length}
+              </h2>
+              <h2 className="text-sm text-slate-300">
+                Follows {user?.follows.length}
+              </h2>
+            </div>
+            <button
+              onClick={follow}
+              className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded bg-cyan-500 px-6 text-sm font-medium tracking-wide text-white transition duration-300 hover:bg-cyan-600 focus:bg-cyan-700 focus-visible:outline-none disabled:cursor-not-allowed disabled:border-cyan-300 disabled:bg-cyan-300 disabled:shadow-none"
+            >
+              Follow
+            </button>
+          </div>
           <div className="relative grow">
             {isLoading ? (
               <svg

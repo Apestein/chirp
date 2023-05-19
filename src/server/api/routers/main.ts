@@ -65,7 +65,12 @@ export const mainRouter = createTRPCRouter({
         },
         orderBy: [{ createdAt: "desc" }],
         include: {
-          user: true,
+          user: {
+            include: {
+              followers: true,
+              follows: true,
+            },
+          },
           _count: {
             select: { likedBy: true, comments: true },
           },
@@ -169,5 +174,26 @@ export const mainRouter = createTRPCRouter({
             },
           },
         })
+    }),
+  updateFollowers: privateProcedure
+    .input(
+      z.object({
+        userToFollowId: z.string().min(1).max(255),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId
+      if (userId === input.userToFollowId)
+        throw new TRPCError({ code: "FORBIDDEN" })
+      await ctx.prisma.user.update({
+        where: {
+          id: input.userToFollowId,
+        },
+        data: {
+          followers: {
+            connect: { id: userId },
+          },
+        },
+      })
     }),
 })

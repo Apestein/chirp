@@ -23,7 +23,7 @@ export const getStaticProps = async () => {
   }
 }
 
-export default function Home({
+export default function FollowingPage({
   trends,
   topicOfTheDay,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
