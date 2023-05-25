@@ -17,7 +17,7 @@ model Post {
     createdAt DateTime @default(now())
     content String @db.VarChar(255)
     authorId String
-    user User @relation("Author",fields: [authorId], references: [id])
+    user User @relation("Author",fields: [authorId], references: [id], onDelete: Cascade)
     originPostId String?
     originPost Post? @relation("PostComment", fields: [originPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     comments Post[] @relation("PostComment")
