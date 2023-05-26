@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
+  previewFeatures = ["jsonProtocol", "fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -25,6 +25,7 @@ model Post {
 
     @@index([authorId])
     @@index([originPostId])
+    @@fulltext([content])
 }
 
 model User {

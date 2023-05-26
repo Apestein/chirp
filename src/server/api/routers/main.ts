@@ -242,4 +242,31 @@ export const mainRouter = createTRPCRouter({
           },
         })
     }),
+  search: publicProcedure
+    .input(
+      z.object({
+        query: z.string().min(3).max(255),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.prisma.post.findMany({
+        where: {
+          content: {
+            search: input.query,
+          },
+        },
+        include: {
+          user: true,
+          _count: {
+            select: { likedBy: true, comments: true },
+          },
+          likedBy: {
+            where: {
+              id: ctx.userId ?? "",
+            },
+          },
+        },
+      })
+      return result
+    }),
 })
