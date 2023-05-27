@@ -21,12 +21,14 @@ export default function SearchPage() {
     <Layout>
       <main className="flex justify-center overflow-auto">
         <div className="container relative h-fit min-h-full border-x border-[#ffffff50]">
-          <input
-            type="text"
-            className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
-            placeholder="Search posts"
-            onChange={(e) => debounced(e.target.value)}
-          />
+          <div className="p-3">
+            <input
+              type="text"
+              className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
+              placeholder="Search posts"
+              onChange={(e) => debounced(e.target.value)}
+            />
+          </div>
         </div>
       </main>
     </Layout>

@@ -7,9 +7,7 @@ import Post from "~/components/Post"
 
 export default function SearchPage() {
   function stringOrNull(str: unknown) {
-    if (typeof str === "string") {
-      return str
-    }
+    if (typeof str === "string") return str
     return ""
   }
 
@@ -39,13 +37,15 @@ export default function SearchPage() {
     <Layout>
       <main className="flex justify-center overflow-auto">
         <div className="container relative h-fit min-h-full border-x border-[#ffffff50]">
-          <input
-            type="text"
-            className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
-            placeholder="Search posts"
-            defaultValue={q}
-            onChange={(e) => debounced(e.target.value)}
-          />
+          <div className="p-3">
+            <input
+              type="text"
+              className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
+              placeholder="Search posts"
+              defaultValue={q}
+              onChange={(e) => debounced(e.target.value)}
+            />
+          </div>
           <ul>
             {Posts?.map((post) => (
               <Post key={post.id} {...post} />
