@@ -1,17 +1,35 @@
 import { useRouter } from "next/router"
+import Layout from "~/components/layout"
+import { api } from "~/utils/api"
 import { useEffect, useState } from "react"
 import { useDebouncedCallback } from "use-debounce"
-import Layout from "~/components/layout"
+import Post from "~/components/Post"
 
 export default function SearchPage() {
-  const [query, setQuery] = useState("")
+  function stringOrEmpty(stringArray: string[] | string | undefined) {
+    if (typeof stringArray === "object") {
+      if (stringArray[0]) return stringArray[0]
+    }
+    return ""
+  }
+
+  const router = useRouter()
+  const q = stringOrEmpty(router.query.q)
+  const res = api.main.search.useQuery(
+    { query: q },
+    {
+      enabled: Boolean(q),
+    }
+  )
+  const Posts = res.data
+
+  const [query, setQuery] = useState(q)
   const debounced = useDebouncedCallback((value: string) => {
     setQuery(value)
-  }, 1500)
-  const router = useRouter()
+  }, 1000)
   useEffect(() => {
-    if (query.length >= 3)
-      void router.push("search/" + query, undefined, {
+    if (router.isReady && query.length >= 3)
+      void router.push(query, undefined, {
         scroll: false,
         shallow: true,
       })
@@ -26,9 +44,15 @@ export default function SearchPage() {
               type="text"
               className="h-12 w-full rounded-sm px-2 text-xl text-black outline-none"
               placeholder="Search posts"
+              defaultValue={q}
               onChange={(e) => debounced(e.target.value)}
             />
           </div>
+          <ul>
+            {Posts?.map((post) => (
+              <Post key={post.id} {...post} />
+            ))}
+          </ul>
         </div>
       </main>
     </Layout>
