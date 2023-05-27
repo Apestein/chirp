@@ -6,6 +6,7 @@ _Features:_
 
 - Authentication System
 - Rate Limiting
+- Full Text Search
 - Infinitely Nestable Comments
 - Infinite Scroll
 - Like/Unlike
