@@ -34,10 +34,10 @@ export default function Post(props: PostWithUser) {
         alt="profile-image"
         width={64}
         height={64}
-        className="rounded-full h-16 w-16"
+        className="h-16 w-16 rounded-full"
       />
       <div className="w-full">
-        <Link href={`/@${user.username}?authorId=${authorId}`}>
+        <Link href={`/user/@${user.username}?authorId=${authorId}`}>
           {user.username} · {dayjs(createdAt).fromNow()}
         </Link>
         <div className="flex justify-between">
