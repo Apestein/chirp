@@ -27,7 +27,7 @@ export default function InfiniteScroller(props: {
     const timeOutId = setTimeout(() => enableAnimations(true), 1000)
 
     return () => clearTimeout(timeOutId)
-  }, [isFetchingNextPage, enableAnimations])
+  }, [isFetchingNextPage])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,7 +48,7 @@ export default function InfiniteScroller(props: {
         observer.unobserve(observerTarget.current)
       }
     }
-  }, [observerTarget, fetchNextPage])
+  }, [observerTarget])
 
   return (
     <div>
