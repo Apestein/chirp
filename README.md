@@ -5,6 +5,7 @@
 _Features:_
 
 - Authentication System
+- Real-Time
 - Rate Limiting
 - Full Text Search
 - Infinitely Nestable Comments
@@ -18,6 +19,7 @@ _Technologies Used:_
 
 - Create T3 App (NextJS, Typescript, tRPC, Prisma, Tailwind)
 - Clerk Authentication
+- Pusher (WebSocket)
 - Planetscale (MySQL)
 - Upstash (Ratelimiter)
 - Axiom (Logging)
