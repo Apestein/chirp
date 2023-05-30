@@ -4,6 +4,8 @@ import Link from "next/link"
 import { type PropsWithChildren, useEffect } from "react"
 import { api } from "~/utils/api"
 import { useRouter } from "next/router"
+import Pusher from "pusher-js"
+import { env } from "~/env.mjs"
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
@@ -18,6 +20,21 @@ export default function Layout({ children }: PropsWithChildren) {
 function Header() {
   const ctx = api.useContext()
   const { isSignedIn } = useAuth()
+
+  useEffect(() => {
+    const pusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
+      cluster: "mt1",
+    })
+    const channel1 = pusher.subscribe("my-channel")
+    channel1.bind("my-event", function (_data: string) {
+      void ctx.main.invalidate()
+    })
+
+    return () => {
+      pusher.unsubscribe("my-channel")
+    }
+  }, [])
+
   useEffect(() => {
     void ctx.main.invalidate()
   }, [isSignedIn])

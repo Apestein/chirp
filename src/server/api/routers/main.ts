@@ -7,6 +7,16 @@ import {
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { TRPCError } from "@trpc/server"
+import Pusher from "pusher"
+import { env } from "~/env.mjs"
+
+const pusher = new Pusher({
+  appId: env.PUSHER_APP_ID,
+  key: env.NEXT_PUBLIC_PUSHER_KEY,
+  secret: env.PUSHER_SECRET,
+  cluster: "mt1",
+  useTLS: true,
+})
 
 // Create a new ratelimiter, that allows 2 requests per 10 seconds
 const ratelimit = new Ratelimit({
@@ -50,6 +60,7 @@ export const mainRouter = createTRPCRouter({
         const nextItem = posts.pop()
         nextCursor = nextItem!.id
       }
+
       return { posts, nextCursor }
     }),
   getFollowing: privateProcedure.query(async ({ ctx }) => {
@@ -175,6 +186,8 @@ export const mainRouter = createTRPCRouter({
           originPostId: input.originPostId,
         },
       })
+
+      void pusher.trigger("my-channel", "my-event", "")
     }),
   updateLikes: privateProcedure
     .input(
