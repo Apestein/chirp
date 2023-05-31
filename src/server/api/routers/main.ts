@@ -191,13 +191,7 @@ export const mainRouter = createTRPCRouter({
       void pusher.trigger("my-channel", "my-event", "")
       //if comment, create notification
       if (input.originPostId)
-        void handleNotification(
-          authorId,
-          input.originPostId,
-          "comment",
-          `${ctx.userId} commented`,
-          ctx.prisma
-        )
+        void handleNotification(authorId, input.originPostId, true, ctx.prisma)
     }),
   updateLikes: privateProcedure
     .input(
@@ -292,53 +286,35 @@ export const mainRouter = createTRPCRouter({
       })
       return result
     }),
-  // createNotification: privateProcedure
-  //   .input(
-  //     z.object({
-  //       originPostId: z.string().min(1),
-  //       message: z.string().min(1).max(255),
-  //     })
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     const authorId = ctx.userId
-  //     const post = await ctx.prisma.post.findUnique({
-  //       where: {
-  //         id: input.originPostId,
-  //       },
-  //     })
-  //     if (!post?.authorId) throw new TRPCError({ code: "NOT_FOUND" })
-  //     void ctx.prisma.notification.create({
-  //       data: {
-  //         fromUserId: authorId,
-  //         toUserId: post.authorId,
-  //         postId: input.originPostId,
-  //         likeOrComment: "comment",
-  //         message: input.message,
-  //       },
-  //     })
-  //   }),
+  getNotifications: privateProcedure.query(async ({ ctx }) => {
+    const notifications = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.userId,
+      },
+      include: {
+        notifications: {
+          include: {
+            from: true,
+            post: true,
+          },
+        },
+      },
+    })
+    return notifications
+  }),
 })
 
 async function handleNotification(
-  authorId: string,
-  originPostId: string,
-  likeOrComment: "like" | "comment",
-  message: string,
+  fromUserId: string,
+  postId: string,
+  isComment: boolean,
   prisma: PrismaClient
 ) {
-  const post = await prisma.post.findUnique({
-    where: {
-      id: originPostId,
-    },
-  })
-  if (!post?.authorId) throw new TRPCError({ code: "NOT_FOUND" })
   await prisma.notification.create({
     data: {
-      fromUserId: authorId,
-      toUserId: post.authorId,
-      postId: originPostId,
-      likeOrComment,
-      message: message,
+      fromUserId,
+      postId,
+      isComment,
     },
   })
 }

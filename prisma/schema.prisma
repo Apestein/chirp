@@ -22,6 +22,7 @@ model Post {
     originPost Post? @relation("PostComment", fields: [originPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     comments Post[] @relation("PostComment")
     likedBy User[]
+    notifications Notification[]
 
     @@index([authorId])
     @@index([originPostId])
@@ -37,17 +38,18 @@ model User {
   likedPosts Post[]
   followers User[]  @relation(name: "Followers")
   follows   User[]  @relation(name: "Followers")
+  notifications Notification[]
 }
 
 model Notification {
+  id String @id @default(cuid())
   createdAt DateTime @default(now())
   fromUserId String
-  toUserId String
+  from User @relation(fields: [fromUserId], references: [id], onDelete: Cascade)
   postId String
-  likeOrComment String
-  message String @db.VarChar(255)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  isComment Boolean
 
-  @@id([fromUserId, postId, likeOrComment])
   @@index([fromUserId])
   @@index([postId])
 }
