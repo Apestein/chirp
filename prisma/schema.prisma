@@ -38,3 +38,16 @@ model User {
   followers User[]  @relation(name: "Followers")
   follows   User[]  @relation(name: "Followers")
 }
+
+model Notification {
+  createdAt DateTime @default(now())
+  fromUserId String
+  toUserId String
+  postId String
+  likeOrComment String
+  message String @db.VarChar(255)
+
+  @@id([fromUserId, postId, likeOrComment])
+  @@index([fromUserId])
+  @@index([postId])
+}

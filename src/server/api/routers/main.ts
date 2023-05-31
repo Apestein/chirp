@@ -9,6 +9,7 @@ import { Redis } from "@upstash/redis"
 import { TRPCError } from "@trpc/server"
 import Pusher from "pusher"
 import { env } from "~/env.mjs"
+import { type PrismaClient } from "@prisma/client"
 
 const pusher = new Pusher({
   appId: env.PUSHER_APP_ID,
@@ -188,6 +189,15 @@ export const mainRouter = createTRPCRouter({
       })
 
       void pusher.trigger("my-channel", "my-event", "")
+      //if comment, create notification
+      if (input.originPostId)
+        void handleNotification(
+          authorId,
+          input.originPostId,
+          "comment",
+          `${ctx.userId} commented`,
+          ctx.prisma
+        )
     }),
   updateLikes: privateProcedure
     .input(
@@ -282,4 +292,53 @@ export const mainRouter = createTRPCRouter({
       })
       return result
     }),
+  // createNotification: privateProcedure
+  //   .input(
+  //     z.object({
+  //       originPostId: z.string().min(1),
+  //       message: z.string().min(1).max(255),
+  //     })
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     const authorId = ctx.userId
+  //     const post = await ctx.prisma.post.findUnique({
+  //       where: {
+  //         id: input.originPostId,
+  //       },
+  //     })
+  //     if (!post?.authorId) throw new TRPCError({ code: "NOT_FOUND" })
+  //     void ctx.prisma.notification.create({
+  //       data: {
+  //         fromUserId: authorId,
+  //         toUserId: post.authorId,
+  //         postId: input.originPostId,
+  //         likeOrComment: "comment",
+  //         message: input.message,
+  //       },
+  //     })
+  //   }),
 })
+
+async function handleNotification(
+  authorId: string,
+  originPostId: string,
+  likeOrComment: "like" | "comment",
+  message: string,
+  prisma: PrismaClient
+) {
+  const post = await prisma.post.findUnique({
+    where: {
+      id: originPostId,
+    },
+  })
+  if (!post?.authorId) throw new TRPCError({ code: "NOT_FOUND" })
+  await prisma.notification.create({
+    data: {
+      fromUserId: authorId,
+      toUserId: post.authorId,
+      postId: originPostId,
+      likeOrComment,
+      message: message,
+    },
+  })
+}
