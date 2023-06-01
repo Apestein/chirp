@@ -7,7 +7,7 @@ const publicPaths = [
   "/",
   "/sign-in*",
   "/sign-up*",
-  "/api/trpc*",
+  "/api*",
   "/user*",
   "/search*",
   "/post*",
