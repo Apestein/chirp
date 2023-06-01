@@ -5,14 +5,14 @@
 _Features:_
 
 - Authentication System
-- Real-Time
+- Real Time App
 - Rate Limiting
 - Full Text Search
 - Infinitely Nestable Comments
 - Infinite Scroll
 - Like/Unlike
 - Follow/Unfollow
-- Toast Notification
+- Notification System
 - Responsive Design
 
 _Technologies Used:_
@@ -21,7 +21,7 @@ _Technologies Used:_
 - Clerk Authentication
 - Pusher (WebSocket)
 - Planetscale (MySQL)
-- Upstash (Ratelimiter)
+- Upstash (Redis & Ratelimiter)
 - Axiom (Logging)
 - Zod
 - React Query
