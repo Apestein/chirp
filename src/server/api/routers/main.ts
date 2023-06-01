@@ -298,18 +298,16 @@ export const mainRouter = createTRPCRouter({
       return result
     }),
   getNotifications: privateProcedure.query(async ({ ctx }) => {
-    const notifications = await ctx.prisma.user.findUnique({
+    const notifications = await ctx.prisma.notification.findMany({
       where: {
-        id: ctx.userId,
-      },
-      include: {
-        notifications: {
-          orderBy: [{ createdAt: "desc" }],
-          include: {
-            from: true,
-            post: true,
-          },
+        post: {
+          authorId: ctx.userId,
         },
+      },
+      orderBy: [{ createdAt: "desc" }],
+      include: {
+        from: true,
+        post: true,
       },
     })
     return notifications

@@ -1,14 +1,15 @@
 import Layout from "~/components/layout"
 import { api } from "~/utils/api"
 import Link from "next/link"
+import { useUser } from "@clerk/nextjs"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
 dayjs.extend(relativeTime)
 
 export default function NotificationsPage() {
-  const { data } = api.main.getNotifications.useQuery()
-  const notifications = data?.notifications
+  const { data: notifications } = api.main.getNotifications.useQuery()
+  const { user } = useUser()
 
   return (
     <Layout>
@@ -25,11 +26,13 @@ export default function NotificationsPage() {
                     href={`/user/@${notification.from.username}?authorId=${notification.from.id}`}
                     className="text-blue-500"
                   >
-                    {notification.from.username}
+                    {user?.id === notification.fromUserId
+                      ? "You"
+                      : notification.from.username}
                   </Link>
                   {notification.action === "liked"
                     ? " liked your "
-                    : " commented your "}
+                    : " commented on your "}
                   <Link
                     href={`/post/${notification.post.id}`}
                     className="text-blue-500"
