@@ -32,6 +32,7 @@ export default function FollowingPage({
 
   function aggregatePosts() {
     const users = data?.follows
+    if (!users?.length) return
     const posts = users?.reduce((prev, current) => {
       const combinedPosts = prev.posts.concat(current.posts)
       const shallowCopy = { ...prev }
