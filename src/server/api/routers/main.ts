@@ -180,7 +180,7 @@ export const mainRouter = createTRPCRouter({
       const authorId = ctx.userId
       const { success } = await ratelimit.limit(authorId)
       if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
-      await ctx.prisma.post.create({
+      const post = await ctx.prisma.post.create({
         data: {
           authorId,
           content: input.content,
@@ -188,10 +188,15 @@ export const mainRouter = createTRPCRouter({
         },
       })
 
-      void pusher.trigger("my-channel", "my-event", "")
-      //if comment, create notification
       if (input.originPostId)
-        void handleNotification(authorId, input.originPostId, true, ctx.prisma)
+        void handleNotification(
+          authorId,
+          input.originPostId,
+          post.id,
+          ctx.prisma
+        )
+
+      void pusher.trigger("my-channel", "my-event", "")
     }),
   updateLikes: privateProcedure
     .input(
@@ -213,7 +218,7 @@ export const mainRouter = createTRPCRouter({
             },
           },
         })
-      else
+      else {
         await ctx.prisma.post.update({
           where: {
             id: input.postId,
@@ -224,7 +229,13 @@ export const mainRouter = createTRPCRouter({
             },
           },
         })
+
+        void handleNotification(userId, input.postId, "liked", ctx.prisma)
+
+        void pusher.trigger("my-channel", "my-event", "")
+      }
     }),
+
   updateFollowers: privateProcedure
     .input(
       z.object({
@@ -293,6 +304,7 @@ export const mainRouter = createTRPCRouter({
       },
       include: {
         notifications: {
+          orderBy: [{ createdAt: "desc" }],
           include: {
             from: true,
             post: true,
@@ -307,14 +319,14 @@ export const mainRouter = createTRPCRouter({
 async function handleNotification(
   fromUserId: string,
   postId: string,
-  isComment: boolean,
+  action: string,
   prisma: PrismaClient
 ) {
   await prisma.notification.create({
     data: {
       fromUserId,
       postId,
-      isComment,
+      action,
     },
   })
 }

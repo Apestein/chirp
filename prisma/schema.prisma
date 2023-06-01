@@ -42,14 +42,14 @@ model User {
 }
 
 model Notification {
-  id String @id @default(cuid())
   createdAt DateTime @default(now())
   fromUserId String
   from User @relation(fields: [fromUserId], references: [id], onDelete: Cascade)
   postId String
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  isComment Boolean
+  action String
 
+  @@id([fromUserId, postId, action])
   @@index([fromUserId])
   @@index([postId])
 }
