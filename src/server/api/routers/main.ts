@@ -9,6 +9,7 @@ import { Redis } from "@upstash/redis"
 import { TRPCError } from "@trpc/server"
 import Pusher from "pusher"
 import { env } from "~/env.mjs"
+import { type PrismaClient } from "@prisma/client"
 
 const pusher = new Pusher({
   appId: env.PUSHER_APP_ID,
@@ -179,13 +180,21 @@ export const mainRouter = createTRPCRouter({
       const authorId = ctx.userId
       const { success } = await ratelimit.limit(authorId)
       if (!success) throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
-      await ctx.prisma.post.create({
+      const post = await ctx.prisma.post.create({
         data: {
           authorId,
           content: input.content,
           originPostId: input.originPostId,
         },
       })
+
+      if (input.originPostId)
+        void handleNotification(
+          authorId,
+          input.originPostId,
+          post.id,
+          ctx.prisma
+        )
 
       void pusher.trigger("my-channel", "my-event", "")
     }),
@@ -209,7 +218,7 @@ export const mainRouter = createTRPCRouter({
             },
           },
         })
-      else
+      else {
         await ctx.prisma.post.update({
           where: {
             id: input.postId,
@@ -220,7 +229,13 @@ export const mainRouter = createTRPCRouter({
             },
           },
         })
+
+        void handleNotification(userId, input.postId, "liked", ctx.prisma)
+
+        void pusher.trigger("my-channel", "my-event", "")
+      }
     }),
+
   updateFollowers: privateProcedure
     .input(
       z.object({
@@ -282,4 +297,36 @@ export const mainRouter = createTRPCRouter({
       })
       return result
     }),
+  getNotifications: privateProcedure.query(async ({ ctx }) => {
+    const notifications = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.userId,
+      },
+      include: {
+        notifications: {
+          orderBy: [{ createdAt: "desc" }],
+          include: {
+            from: true,
+            post: true,
+          },
+        },
+      },
+    })
+    return notifications
+  }),
 })
+
+async function handleNotification(
+  fromUserId: string,
+  postId: string,
+  action: string,
+  prisma: PrismaClient
+) {
+  await prisma.notification.create({
+    data: {
+      fromUserId,
+      postId,
+      action,
+    },
+  })
+}

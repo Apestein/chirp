@@ -22,6 +22,7 @@ model Post {
     originPost Post? @relation("PostComment", fields: [originPostId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     comments Post[] @relation("PostComment")
     likedBy User[]
+    notifications Notification[]
 
     @@index([authorId])
     @@index([originPostId])
@@ -37,4 +38,18 @@ model User {
   likedPosts Post[]
   followers User[]  @relation(name: "Followers")
   follows   User[]  @relation(name: "Followers")
+  notifications Notification[]
+}
+
+model Notification {
+  createdAt DateTime @default(now())
+  fromUserId String
+  from User @relation(fields: [fromUserId], references: [id], onDelete: Cascade)
+  postId String
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  action String
+
+  @@id([fromUserId, postId, action])
+  @@index([fromUserId])
+  @@index([postId])
 }
