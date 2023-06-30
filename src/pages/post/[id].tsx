@@ -8,11 +8,14 @@ import Layout from "~/components/layout"
 
 const SinglePostPage: NextPage = () => {
   const router = useRouter()
-  const { id } = router.query
-  if (typeof id !== "string") return <p>No id error</p>
-  const { data: post, isLoading } = api.main.getPostById.useQuery({
-    postId: id,
-  })
+  let id = ""
+  if (typeof router.query.id === "string") id = router.query.id
+  const { data: post, isLoading } = api.main.getPostById.useQuery(
+    {
+      postId: id,
+    },
+    { enabled: Boolean(id) }
+  )
   return (
     <>
       <Head>

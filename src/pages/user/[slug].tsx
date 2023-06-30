@@ -9,12 +9,21 @@ import Layout from "~/components/layout"
 
 const ProfilePage: NextPage = () => {
   const router = useRouter()
-  const { slug, authorId } = router.query
-  if (typeof authorId !== "string") return <p>No authorId error</p>
-  if (typeof slug !== "string") return <p>No slug error</p>
-  const { data: postsByUser, isLoading } = api.main.getAllByUser.useQuery({
-    authorId,
-  })
+  let slug = ""
+  let authorId = ""
+  if (
+    typeof router.query.slug === "string" &&
+    typeof router.query.authorId === "string"
+  ) {
+    slug = router.query.slug
+    authorId = router.query.authorId
+  }
+  const { data: postsByUser, isLoading } = api.main.getAllByUser.useQuery(
+    {
+      authorId,
+    },
+    { enabled: Boolean(authorId) }
+  )
 
   const ctx = api.useContext()
   const { mutate, isLoading: isMutatingFollowStatus } =
