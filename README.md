@@ -1,4 +1,4 @@
-# Chirp (work in progress)
+# Chirp
 
 ### A twitter style social media app. Very strict typescript. Typescript-eslint library ensures this app is 100% typesafe by preventing "any" type from leaking in. Type inference provided by Prisma, tRPC, and Zod allows for a typesafe codebase without type declaration everywhere.
 
