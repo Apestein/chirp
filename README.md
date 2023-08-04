@@ -1,29 +1,29 @@
 # Chirp (work in progress)
 
-### A twitter style social media app. 100% typesafe & 100% serverless. Typescript-eslint library ensures this app is 100% typesafe by preventing "any" type from leaking in. Type inference provided by Prisma, tRPC, and Zod allows for a typesafe codebase without type declaration everywhere. Production ready, infinite scaling.
+### A twitter style social media app. Very strict typescript. Typescript-eslint library ensures this app is 100% typesafe by preventing "any" type from leaking in. Type inference provided by Prisma, tRPC, and Zod allows for a typesafe codebase without type declaration everywhere.
 
 _Features:_
 
+- 100% Typesafe
+- Real Time
 - Authentication System
-- Real Time App
 - Rate Limiting
 - Full Text Search
-- Infinitely Nestable Comments
+- Nestable Comments
 - Infinite Scroll
 - Like/Unlike
 - Follow/Unfollow
 - Notification System
-- Responsive Design
+- Responsive
 
 _Technologies Used:_
 
-- Create T3 App (NextJS, Typescript, tRPC, Prisma, Tailwind)
-- Clerk Authentication
-- Pusher (WebSocket)
-- Planetscale (MySQL)
-- Upstash (Redis & Ratelimiter)
-- Axiom (Logging)
-- Zod
+- T3 App: NextJS, Typescript, tRPC, Prisma, Tailwind
+- Clerk - Auth
+- Pusher - WebSocket
+- Planetscale - MySQL
+- Upstash - Redis
+- Axiom - Logging
+- Zod - Validation
 - React Query
-- React Hot Toast
-- Contentful (Headless CMS)
+- Contentful Headless CMS
